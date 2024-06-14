@@ -111,7 +111,7 @@ func generatePromptWithBio(bio, question string) string {
 	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n%s", bio, question)
 }
 
-func main() {
+func processQuestionsWithAI() {
 	// 環境変数を読み込む
 	err := godotenv.Load()
 	if err != nil {
