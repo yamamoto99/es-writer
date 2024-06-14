@@ -3,6 +3,7 @@ module backend
 go 1.21.4
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/MicahParks/keyfunc/v3 v3.3.3
 	github.com/aws/aws-sdk-go-v2 v1.27.2
 	github.com/aws/aws-sdk-go-v2/config v1.27.18
