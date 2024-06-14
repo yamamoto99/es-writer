@@ -63,7 +63,7 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 		return "", err
 	}
 
-	// url先に質問(reqBody)を送るオブジェクト作成 ctx=リクエストのサイクルを制御する、タイムアウトやキャンセルなど 
+	// url先に質問(reqBody)を送るオブジェクト作成 ctx=リクエストのサイクルを制御する、タイムアウトやキャンセルなど
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return "", err
@@ -106,7 +106,6 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 
 	return "", fmt.Errorf("no answer found")
 }
-
 
 func generatePromptWithBio(bio, question string) string {
 	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n%s", bio, question)
