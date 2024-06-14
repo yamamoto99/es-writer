@@ -5,28 +5,36 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 type User struct {
-	ID   int
-	Name string
+	ID        string
+	Name      string
+	Email     string
+	CreatedAt string
 }
 
 var db *sql.DB
+
+var cognitoRegion string
+var clientId string
+var jwksURL string
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
 
 	var user User
-	err := db.QueryRow("SELECT id, name FROM users WHERE name = $1", "Bob").Scan(&user.ID, &user.Name)
+	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
 		log.Fatal(err)
 	}
 
-	fmt.Fprintf(w, "ID: %d, Name: %s\n", user.ID, user.Name)
+	fmt.Fprintf(w, "ID: %s, Name: %s, Email: %s, CreatedAt: %s\n", user.ID, user.Name, user.Email, user.CreatedAt)
 }
 
 func main() {
@@ -39,6 +47,17 @@ func main() {
 	}
 	defer db.Close()
 
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	cognitoRegion = os.Getenv("COGNITO_REGION")
+	clientId = os.Getenv("COGNITO_CLIENT_ID")
+	jwksURL = os.Getenv("TOKEN_KEY_URL")
+
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/signin", signin)
+	http.HandleFunc("/signup", signup)
+	http.HandleFunc("/welcome", welcome)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
