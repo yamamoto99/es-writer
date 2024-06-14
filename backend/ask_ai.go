@@ -9,7 +9,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // AIに送信するリクエストの構造体
@@ -104,15 +107,18 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 	return "", fmt.Errorf("no answer found")
 }
 
-func generatePromptWithBio(bio string, questions []string) string {
-	prompt := fmt.Sprintf("あなたの経歴は以下です。%s\n以下の質問に答えてください。\n", bio)
-	for i, question := range questions {
-		prompt += fmt.Sprintf("%d. %s\n", i+1, question)
-	}
-	return prompt
+
+func generatePromptWithBio(bio, question string) string {
+	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n%s", bio, question)
 }
 
 func main() {
+	// 環境変数を読み込む
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
 	// HTMLファイルの読み込み
 	filePath := "es_sample.html"
 	htmlContent, err := os.ReadFile(filePath)
@@ -127,17 +133,35 @@ func main() {
 	// 経歴情報を定義
 	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。将来的にはエンジニアとしてさまざまな開発に携わりたい。"
 
-	// 質問と経歴情報からプロンプトを生成
-	prompt := generatePromptWithBio(bio, questions)
+	// 並列処理のためのWaitGroupを作成
+	var wg sync.WaitGroup
 
-	// AIに質問を送信して回答を得る
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// コンテキストを設定
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	answer, err := sendToAi(ctx, prompt)
-	if err != nil {
-		log.Fatalf("Error sending to AI: %v", err)
+	// 時間計測開始
+	startTime := time.Now()
+
+	// 質問ごとにゴルーチンを作成して並列処理を実行
+	for _, question := range questions {
+		wg.Add(1)
+		go func(q string) {
+			defer wg.Done()
+			prompt := generatePromptWithBio(bio, q)
+			answer, err := sendToAi(ctx, prompt)
+			if err != nil {
+				log.Printf("Error sending to AI: %v", err)
+				return
+			}
+			fmt.Printf("Question: %s\nAnswer: %s\n", q, answer)
+		}(question)
 	}
 
-	fmt.Printf("AI Response:\n%s\n", answer)
+	// 全てのゴルーチンが終了するのを待機
+	wg.Wait()
+
+	// 時間計測(確認用)
+	elapsedTime := time.Since(startTime)
+	fmt.Printf("Total processing time: %s\n", elapsedTime)
 }
