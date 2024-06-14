@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -33,18 +32,4 @@ func extractQuestions(htmlContent string) []string {
 	f(doc)
 
 	return questions
-}
-
-func main() {
-	filePath := "es_sample.html"
-	htmlContent, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println("error: read file")
-		return
-	}
-
-	questions := extractQuestions(string(htmlContent))
-	for _, question := range questions {
-		fmt.Println(question)
-	}
 }

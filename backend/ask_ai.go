@@ -12,12 +12,12 @@ import (
 	"time"
 )
 
-// AIに送るリクエスト全体
+// AIに送信するリクエストの構造体
 type AiRequest struct {
 	Contents []Content `json:"contents"`
 }
 
-// 
+// リクエスト内のコンテンツ部分
 type Content struct {
 	Parts []Part `json:"parts"`
 }
@@ -105,7 +105,7 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 }
 
 func generatePromptWithBio(bio string, questions []string) string {
-	prompt := fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n", bio)
+	prompt := fmt.Sprintf("あなたの経歴は以下です。%s\n以下の質問に答えてください。\n", bio)
 	for i, question := range questions {
 		prompt += fmt.Sprintf("%d. %s\n", i+1, question)
 	}
@@ -113,23 +113,31 @@ func generatePromptWithBio(bio string, questions []string) string {
 }
 
 func main() {
-	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。将来的にはエンジニアとしてさまざまな開発に携わりたい。"
-	questions := []string{
-		"あなたの強みは何ですか？",
-		"学生時代に力を入れたことは何ですか？",
-		"将来の目標は何ですか？",
+	// HTMLファイルの読み込み
+	filePath := "es_sample.html"
+	htmlContent, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("error: read file")
+		return
 	}
 
-	// ここで履歴と問題文を一文にまとめて全部をAIに投げる。並列処理とかにできたら早くなりそう
+	// 質問の抽出
+	questions := extractQuestions(string(htmlContent))
+
+	// 経歴情報を定義
+	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。将来的にはエンジニアとしてさまざまな開発に携わりたい。"
+
+	// 質問と経歴情報からプロンプトを生成
 	prompt := generatePromptWithBio(bio, questions)
 
-	// タイムアウトの時間の設定(15秒は長すぎかも)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// AIに質問を送信して回答を得る
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	answer, err := sendToAi(ctx, prompt)
 	if err != nil {
 		log.Fatalf("Error sending to AI: %v", err)
 	}
+
 	fmt.Printf("AI Response:\n%s\n", answer)
 }
