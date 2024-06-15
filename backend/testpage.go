@@ -15,7 +15,7 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ユーザー名を取得
-	username, err := getValueFromToken(r, "idToken", "cognito:username")
+	username, err := getValueFromToken(r, "cognito:username")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("ユーザー名の取得に失敗しました: %v", err), http.StatusUnauthorized)
 		return

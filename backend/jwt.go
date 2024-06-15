@@ -57,9 +57,9 @@ func validateIDToken(r *http.Request) error {
  * username -> "cognito:username"
  * email -> "email"
  */
-func getValueFromToken(r *http.Request, cookieName, claimKey string) (string, error) {
+func getValueFromToken(r *http.Request, claimKey string) (string, error) {
 	// クッキーからトークンを取得
-	token, err := parseTokenFromCookie(r, cookieName)
+	token, err := parseTokenFromCookie(r, "idToken")
 	if err != nil {
 		return "", err
 	}
