@@ -1,27 +1,11 @@
 services:
+  terraform:
+    image: hashicorp/terraform:1.8
+    working_dir: /backend/terraform
+    volumes:
+      - ./terraform:/terraform
+    entrypoint: /bin/sh -c "cd /terraform && terraform init && terraform apply -var-file=terraform.tfvars -auto-approve"
   api:
     build: .
     ports:
       - "8080:8080"
-    depends_on:
-      - db
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: testdb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./sql:/docker-entrypoint-initdb.d
-  phppgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
-volumes:
-  db_data:
