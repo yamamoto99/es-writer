@@ -1,5 +1,5 @@
 name: build
-run-name: ${{ github.actor }} is building ${{ github.ref_name }} 🚀
+run-name: DockerImageを生成 🚀
 on:
   push:
     branches:
