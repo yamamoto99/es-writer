@@ -1,5 +1,5 @@
-name: build
-run-name: DockerImageを生成 🚀
+name: build and test
+run-name: Docker Compose でイメージを生成およびテスト 🚀
 on:
   push:
     branches:
@@ -15,36 +15,40 @@ jobs:
     permissions:
       contents: read
       packages: write
+
     steps:
-      # リポジトリをチェックアウト
-      - name: Checkout
+      - name: リポジトリをチェックアウト
         uses: actions/checkout@v3
 
-      # コンテナレジストリにログイン
-      - name: Log in to the Container registry
+      - name: セットアップ Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Docker Compose ビルド
+        run: docker-compose build
+
+      - name: コンテナレジストリにログイン
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Docker用のメタデータ（タグ、ラベル）を抽出
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Docker用のメタデータ（タグ、ラベル）を抽出
         id: meta
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # 変数の確認
-      - name: Check variables
+      - name: 変数の確認
         run: |
           echo 'Current path:'
           pwd
           echo 'Tag: ${{ steps.meta.outputs.tags }}'
           echo 'Label: ${{ steps.meta.outputs.labels }}'
 
-      # 環境変数の読み込み
-      - name: Set environment variables
+      - name: 環境変数の読み込み
         run: |
           echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> $GITHUB_ENV
           echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
@@ -56,11 +60,10 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
 
-      # Dockerイメージをビルドしてプッシュ
-      - name: Build and push Docker image
+      - name: Dockerイメージをビルドしてプッシュ
         uses: docker/build-push-action@v3
         with:
-          context: ./backend
+          context: .
           file: ./backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
