@@ -111,7 +111,7 @@ func generatePromptWithBio(bio, question string) string {
 	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n%s", bio, question)
 }
 
-func processQuestionsWithAI() {
+func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 	// 環境変数を読み込む
 	err := godotenv.Load()
 	if err != nil {
@@ -139,13 +139,20 @@ func processQuestionsWithAI() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	type Answer struct {
+		Question string `json:"question"`
+		Answer   string `json:"answer"`
+	}
+
+	answers := make([]Answer, len(questions))
+
 	// 時間計測開始
 	startTime := time.Now()
 
 	// 質問ごとにゴルーチンを作成して並列処理を実行
-	for _, question := range questions {
+	for i, question := range questions {
 		wg.Add(1)
-		go func(q string) {
+		go func(i int, q string) {
 			defer wg.Done()
 			prompt := generatePromptWithBio(bio, q)
 			answer, err := sendToAi(ctx, prompt)
@@ -153,8 +160,8 @@ func processQuestionsWithAI() {
 				log.Printf("Error sending to AI: %v", err)
 				return
 			}
-			fmt.Printf("Question: %s\nAnswer: %s\n", q, answer)
-		}(question)
+			answers[i] = Answer{Question: q, Answer: answer}
+		}(i, question)
 	}
 
 	// 全てのゴルーチンが終了するのを待機
@@ -163,4 +170,7 @@ func processQuestionsWithAI() {
 	// 時間計測(確認用)
 	elapsedTime := time.Since(startTime)
 	fmt.Printf("Total processing time: %s\n", elapsedTime)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(answers)
 }
