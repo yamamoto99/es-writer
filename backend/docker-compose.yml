@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
   api:
-    build: .
+    image: ghcr.io/yamamoto99/es-writer:main
     ports:
       - "8080:8080"
     depends_on:
