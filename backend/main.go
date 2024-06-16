@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -48,12 +47,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// 環境変数を読み込む
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
@@ -61,7 +54,7 @@ func main() {
 	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == ""{
 		log.Fatalf("Required environment variables are not set")
 	}
-	
+
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/signin", signin)
 	http.HandleFunc("/signup", signup)
