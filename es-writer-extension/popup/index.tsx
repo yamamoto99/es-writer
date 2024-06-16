@@ -1,5 +1,5 @@
 import React from "react"
-import { indexContents } from "../contents/index"
+import indexContents from "../contents/index"
 
 function IndexPopup() {
   const handleButtonClick = () => {
