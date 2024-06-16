@@ -1,5 +1,5 @@
 name: build and test
-run-name: Docker Compose でイメージを生成およびテスト 🚀
+run-name: イメージを生成 🚀
 on:
   push:
     branches:
