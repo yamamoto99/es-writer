@@ -26,6 +26,7 @@ jobs:
           sudo apt-get install docker-compose -y
 
       - name: Docker Compose ビルド
+        working-directory: ./backend
         run: docker-compose build
 
       - name: コンテナレジストリにログイン
@@ -63,7 +64,7 @@ jobs:
       - name: Dockerイメージをビルドしてプッシュ
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./backend
           file: ./backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
