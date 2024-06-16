@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: yamamoto99/es-writer
 
 jobs:
   build:
@@ -36,11 +36,13 @@ jobs:
         working-directory: ./backend
         run: docker-compose build
 
+      - name: ビルドされたイメージのリスト表示
+        run: docker images
+
       - name: Docker Compose イメージをタグ付け
         working-directory: ./backend
         run: |
-          docker tag backend_api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker tag backend_db:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_db:latest
+          docker tag $(docker-compose images -q api) ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: 変数の確認
         run: |
@@ -62,4 +64,3 @@ jobs:
       - name: Dockerイメージをプッシュ
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_db:latest
