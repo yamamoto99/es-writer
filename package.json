@@ -6,10 +6,9 @@
   "author": "Plasmo Corp. <foss@plasmo.com>",
   "license": "MIT",
   "scripts": {
-  "dev": "plasmo dev",
-  "start": "plasmo dev --mode development",
-  "build": "plasmo build",
-  "package": "plasmo package"
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
   },
   "dependencies": {
     "plasmo": "0.87.2",

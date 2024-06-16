@@ -1,19 +1,17 @@
 {
-  "extends": "plasmo/templates/tsconfig.base",
-  "exclude": [
-    "node_modules"
-  ],
+  "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
   "include": [
     ".plasmo/index.d.ts",
-    "./**/*.ts",
-    "./**/*.tsx"
-  ],
-  "compilerOptions": {
-    "paths": {
-      "~*": [
-        "./*"
-      ]
-    },
-    "baseUrl": "."
-  }
+    "src"
+  ]
 }

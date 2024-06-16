@@ -1,26 +1,15 @@
-import * as react from "react"
+import React from "react"
 import { indexContents } from "../contents/index"
 
 function IndexPopup() {
+  const handleButtonClick = () => {
+    console.log("Button clicked") // ボタンがクリックされたことを確認するためのログ
+    indexContents()
+  }
+
   return (
-    // <div
-    //   style={{
-    //     padding: 16
-    //   }}>
-    //   <h2>
-    //     Welcome to your{" "}
-    //     <a href="https://www.plasmo.com" target="_blank">
-    //       Plasmo
-    //     </a>{" "}
-    //     Extension!
-    //   </h2>
-    //   <input onChange={(e) => setData(e.target.value)} value={data} />
-    //   <a href="https://docs.plasmo.com" target="_blank">
-    //     View Docs
-    //   </a>
-    // </div>
-    <div style={{ width: '200px', height: '100px' }}>
-      <button onClick={indexContents}>回答生成</button>
+    <div style={{ width: '150px', height: '75px' }}>
+      <button onClick={handleButtonClick}>回答生成</button>
     </div>
   )
 }
