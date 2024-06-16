@@ -11,6 +11,8 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // AIに送信するリクエストの構造体
@@ -26,6 +28,11 @@ type Content struct {
 // コンテンツ部分の中身の文章
 type Part struct {
 	Text string `json:"text"`
+}
+
+// HTMLリクエスト
+type HtmlRequest struct {
+	Html string `json:"html"`
 }
 
 // AIからのレスポンスを受け取る
@@ -110,16 +117,43 @@ func generatePromptWithBio(bio, question string) string {
 }
 
 func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
-	// HTMLファイルの読み込み
-	filePath := "es_sample.html"
-	htmlContent, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println("error: read file")
+	// CORSヘッダーを追加
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// OPTIONSリクエストに対する処理
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
+	// 環境変数を読み込む
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	// HTMLの読み込み
+	var req HtmlRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		log.Printf("Error decoding request body: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	// 不要な部分を取り除く
+	cleanHtml := cleanHTMLContent(req.Html)
+	log.Printf("Cleaned HTML: %s", cleanHtml)
+
 	// 質問の抽出
-	questions := extractQuestions(string(htmlContent))
+	questions := extractQuestions(cleanHtml)
+	if len(questions) == 0 {
+		log.Printf("No questions found in the HTML content")
+		http.Error(w, "No questions found", http.StatusBadRequest)
+		return
+	}
 
 	// 経歴情報を定義
 	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。将来的にはエンジニアとしてさまざまな開発に携わりたい。"
@@ -166,3 +200,8 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(answers)
 }
+
+// func main() {
+// 	http.HandleFunc("/getAnswers", processQuestionsWithAI)
+// 	log.Fatal(http.ListenAndServe(":8080", nil))
+// }
