@@ -49,14 +49,14 @@ func main() {
 	defer db.Close()
 
 	err = godotenv.Load()
-    if err != nil {
-        log.Fatalf("Error loading .env file")
-    }
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
-	apiKey := os.Getenv("GOOGLE_API_KEY")
-	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == ""{
+	apiKey = os.Getenv("GOOGLE_API_KEY")
+	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == "" {
 		log.Fatalf("Required environment variables are not set")
 	}
 
