@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -22,6 +23,7 @@ var db *sql.DB
 var cognitoRegion string
 var clientId string
 var jwksURL string
+var apiKey string
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
@@ -46,17 +48,24 @@ func main() {
 	}
 	defer db.Close()
 
+	// 環境変数を読み込む
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
-	if cognitoRegion == "" || clientId == "" || jwksURL == "" {
+	apiKey := os.Getenv("GOOGLE_API_KEY")
+	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == ""{
 		log.Fatalf("Required environment variables are not set")
 	}
-
+	
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/signin", signin)
 	http.HandleFunc("/signup", signup)
 	http.HandleFunc("/welcome", welcome)
-    http.HandleFunc("/getAnswers", processQuestionsWithAI)
+	http.HandleFunc("/getAnswers", processQuestionsWithAI)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

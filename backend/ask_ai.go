@@ -8,11 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // AIに送信するリクエストの構造体
@@ -47,11 +44,6 @@ type AiResponse struct {
 }
 
 func sendToAi(ctx context.Context, question string) (string, error) {
-	apiKey := os.Getenv("GOOGLE_API_KEY")
-	if apiKey == "" {
-		return "", fmt.Errorf("error: GOOGLE_API_KEY environment variable not set")
-	}
-
 	// エンドポイントURLを設定
 	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=%s", apiKey)
 	// 質問を含むリクエストボディをJSON形式に変換
@@ -128,15 +120,9 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 環境変数を読み込む
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
 	// HTMLの読み込み
 	var req HtmlRequest
-	err = json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		log.Printf("Error decoding request body: %v", err)
 		http.Error(w, "Bad request", http.StatusBadRequest)
