@@ -67,16 +67,16 @@ jobs:
             TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
 
-        - name: デプロイ用SSHキーを設定
-          uses: webfactory/ssh-agent@v0.5.4
-          with:
-            ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: デプロイ用SSHキーを設定
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-        - name: EC2にデプロイ
-          run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-              docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-              docker stop myapp || true
-              docker rm myapp || true
-              docker run -d --name myapp -p 80:80 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            EOF
+      - name: EC2にデプロイ
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 80:80 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          EOF
