@@ -11,8 +11,6 @@ import (
 	"os"
 	"sync"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // AIに送信するリクエストの構造体
@@ -112,12 +110,6 @@ func generatePromptWithBio(bio, question string) string {
 }
 
 func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
-	// 環境変数を読み込む
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
 	// HTMLファイルの読み込み
 	filePath := "es_sample.html"
 	htmlContent, err := os.ReadFile(filePath)
