@@ -1,12 +1,6 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      labels:
-        com.example.description: "API service"
-      tags:
-        - ghcr.io/yamamoto99/es-writer:latest
+    build: .
     ports:
       - "8080:8080"
     depends_on:

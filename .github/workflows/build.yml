@@ -42,7 +42,8 @@ jobs:
       - name: Docker Compose イメージをタグ付け
         working-directory: ./backend
         run: |
-          docker tag $(docker-compose images -q api) ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          IMAGE_ID=$(docker-compose images -q api)
+          docker tag $IMAGE_ID ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: 変数の確認
         run: |
