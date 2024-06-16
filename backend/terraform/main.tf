@@ -99,8 +99,8 @@ resource "aws_route_table_association" "public_c" {
 
 resource "aws_security_group" "web" {
 	// Webサーバー用のセキュリティグループを定義
-	vpc_id = aws_vpc.main.id
-	name = "allow_http"
+	vpc_id      = aws_vpc.main.id
+	name        = "allow_http"
 	description = "Allow HTTP traffic"
 
 	ingress {
@@ -160,25 +160,37 @@ resource "aws_instance" "web" {
 	subnet_id                   = aws_subnet.public_a.id
 	associate_public_ip_address = true
 	vpc_security_group_ids      = [aws_security_group.web.id]
-	key_name                    = "progate-aws"
+	key_name                    = "${var.key_name}"
 	tags = {
 		Name = "progate-aws-app"
 	}
+	user_data = <<-EOF
+			#!/bin/bash
+			sudo apt update -y
+			sudo apt install -y docker.io
+			sudo systemctl start docker
+			sudo systemctl enable docker
+			EOF
+}
+
+resource "aws_key_pair" "deployer" {
+	key_name   = "${var.key_name}"
+	public_key = "${var.pub_key}"
 }
 
 resource "aws_db_instance" "main" {
 	// RDSインスタンスを定義
-	identifier        = "progate-db"
-	allocated_storage = 20
-	storage_type      = "gp2"
-	engine            = "postgres"
-	engine_version    = "16.3"
-	instance_class    = "db.t3.micro"
-	password = "${var.rds_pass}"
-	username = "${var.rds_username}"
-	db_subnet_group_name = aws_db_subnet_group.main.name
+	identifier             = "progate-db"
+	allocated_storage      = 20
+	storage_type           = "gp2"
+	engine                 = "postgres"
+	engine_version         = "16.3"
+	instance_class         = "db.t3.micro"
+	password               = "${var.rds_pass}"
+	username               = "${var.rds_username}"
+	db_subnet_group_name   = aws_db_subnet_group.main.name
 	vpc_security_group_ids = [aws_security_group.rds.id]
-	skip_final_snapshot = true
+	skip_final_snapshot    = true
 	tags = {
 		Name = "progate-db"
 	}

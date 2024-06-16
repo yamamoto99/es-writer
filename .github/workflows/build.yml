@@ -1,9 +1,9 @@
-name: build and test
-run-name: イメージを生成 🚀
+name: build and deploy
+run-name: 🚀 イメージを生成しEC2にデプロイ 🚀
 on:
   push:
     branches:
-      - main
+      - fix/terraform
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -52,11 +52,6 @@ jobs:
           echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
           echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> $GITHUB_ENV
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GITHUB_ENV
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
 
       - name: Dockerイメージをビルドしてプッシュ
         uses: docker/build-push-action@v3
@@ -71,8 +66,17 @@ jobs:
             COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_PORT=${{ secrets.DB_PORT }}
+
+        - name: デプロイ用SSHキーを設定
+          uses: webfactory/ssh-agent@v0.5.4
+          with:
+            ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+        - name: EC2にデプロイ
+          run: |
+            ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+              docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              docker stop myapp || true
+              docker rm myapp || true
+              docker run -d --name myapp -p 80:80 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            EOF
