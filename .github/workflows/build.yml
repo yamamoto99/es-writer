@@ -1,5 +1,5 @@
 name: build and test
-run-name: Docker Compose でイメージを生成およびテスト 🚀
+run-name: イメージを生成 🚀
 on:
   push:
     branches:
@@ -25,10 +25,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install docker-compose -y
 
-      - name: Docker Compose ビルド
-        working-directory: ./backend
-        run: docker-compose build
-
       - name: コンテナレジストリにログイン
         uses: docker/login-action@v2
         with:
@@ -36,18 +32,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker用のメタデータ（タグ、ラベル）を抽出
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Docker Compose ビルド
+        working-directory: ./backend
+        run: docker-compose build
+
+      - name: Docker Compose イメージをタグ付け
+        working-directory: ./backend
+        run: |
+          docker tag backend_api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker tag backend_db:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_db:latest
 
       - name: 変数の確認
         run: |
           echo 'Current path:'
           pwd
-          echo 'Tag: ${{ steps.meta.outputs.tags }}'
-          echo 'Label: ${{ steps.meta.outputs.labels }}'
 
       - name: 環境変数の読み込み
         run: |
@@ -61,21 +59,7 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
 
-      - name: Dockerイメージをビルドしてプッシュ
-        uses: docker/build-push-action@v3
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}
-            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_PORT=${{ secrets.DB_PORT }}
+      - name: Dockerイメージをプッシュ
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_db:latest
