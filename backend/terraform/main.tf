@@ -155,11 +155,12 @@ resource "aws_security_group" "rds" {
 
 resource "aws_instance" "web" {
 	// EC2インスタンスを定義
-	ami               = "ami-0f9fe1d9214628296"
-	instance_type     = "t2.micro"
-	subnet_id         = aws_subnet.public_a.id
+	ami                         = "ami-0f9fe1d9214628296"
+	instance_type               = "t2.micro"
+	subnet_id                   = aws_subnet.public_a.id
 	associate_public_ip_address = true
-	vpc_security_group_ids = [aws_security_group.web.id]
+	vpc_security_group_ids      = [aws_security_group.web.id]
+	key_name                    = "progate-aws"
 	tags = {
 		Name = "progate-aws-app"
 	}
