@@ -43,6 +43,14 @@ jobs:
           echo 'Tag: ${{ steps.meta.outputs.tags }}'
           echo 'Label: ${{ steps.meta.outputs.labels }}'
 
+      # 環境変数の読み込み
+      - name: Set environment variables
+        run: |
+          echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> $GITHUB_ENV
+          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> $GITHUB_ENV
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GOOGLE_API_KEY
+
       # Dockerイメージをビルドしてプッシュ
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
