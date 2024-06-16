@@ -166,16 +166,12 @@ resource "aws_instance" "web" {
 	}
 	user_data = <<-EOF
 			#!/bin/bash
-			sudo apt update -y
-			sudo apt install -y docker.io
+			sudo dnf update -y
+			sudo dnf install docker -y
 			sudo systemctl start docker
 			sudo systemctl enable docker
+			sudo usermod -a -G docker ec2-user
 			EOF
-}
-
-resource "aws_key_pair" "deployer" {
-	key_name   = "${var.key_name}"
-	public_key = "${var.pub_key}"
 }
 
 resource "aws_db_instance" "main" {
