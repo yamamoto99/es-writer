@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   api:
-    # GitHubActionsで自動生成したimage、buildをコメントアウトで動作
-    image: ghcr.io/yamamoto99/es-writer:main
-    # build: .
+    # # GitHubActionsで自動生成したimage、buildをコメントアウトで動作
+    # image: ghcr.io/yamamoto99/es-writer:main
+    build: .
     ports:
       - "8080:8080"
     depends_on:

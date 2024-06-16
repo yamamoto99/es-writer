@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -47,6 +48,10 @@ func main() {
 	}
 	defer db.Close()
 
+	err = godotenv.Load()
+    if err != nil {
+        log.Fatalf("Error loading .env file")
+    }
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
