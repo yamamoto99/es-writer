@@ -195,7 +195,8 @@ resource "aws_db_instance" "main" {
 	allocated_storage      = 20
 	storage_type           = "gp2"
 	engine                 = "postgres"
-	engine_version         = "15.7"
+	db_name                = "progate-db"
+	engine_version         = "14.7"
 	instance_class         = "db.t3.micro"
 	password               = "${var.rds_pass}"
 	username               = "${var.rds_username}"
