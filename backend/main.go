@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -40,18 +41,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("server started...")
 	var err error
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName)
-	db, err = sql.Open("postgres", 	connStr)
+	// dbHost := os.Getenv("DB_HOST")
+	// dbUser := os.Getenv("DB_USER")
+	// dbPassword := os.Getenv("DB_PASSWORD")
+	// dbName := os.Getenv("DB_NAME")
+	db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
 	if err != nil {
 		fmt.Println("error in db connection")
 		log.Fatal(err)
 	}
 	defer db.Close()
 
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
