@@ -1,107 +1,108 @@
 terraform {
-	// 必要なプロバイダーとそのバージョンを定義
 	required_providers {
 		aws = {
-			source  = "hashicorp/aws"
-			version = "~> 3.0"
+		source  = "hashicorp/aws"
+		version = "~> 3.0"
 		}
 	}
-	// 必要なTerraformのバージョンを定義
 	required_version = ">= 1.0.0"
 }
-
+# providerの宣言
 provider "aws" {
-	// AWSの認証情報を設定
 	access_key = "${var.aws_access_key}"
 	secret_key = "${var.aws_secret_key}"
 	region     = "${var.aws_region}"
 }
 
-resource "aws_vpc" "main" {
-	// VPCを作成
-	cidr_block = "10.0.0.0/16"
+# VPCの設定
+resource "aws_vpc" "dev_env" {
+	cidr_block           = "10.0.0.0/16"
+	instance_tenancy     = "default"
+	enable_dns_support   = "true"
+	enable_dns_hostnames = "true"
 	tags = {
-		Name = "main-vpc"
+		Name = "dev-env"
 	}
 }
 
-resource "aws_internet_gateway" "igw" {
-	// インターネットゲートウェイを作成
-	vpc_id = aws_vpc.main.id
+# パブリックサブネットの作成
+resource "aws_subnet" "public_web" {
+	vpc_id                  = "${aws_vpc.dev_env.id}"
+	cidr_block              = "10.0.0.0/24"
+	map_public_ip_on_launch = true
+	availability_zone       = "ap-northeast-1a"
 	tags = {
-		Name = "main-igw"
+		Name = "public-web"
 	}
 }
 
-resource "aws_subnet" "public_a" {
-	// パブリックサブネットを作成 (アベイラビリティゾーンa)
-	vpc_id            = aws_vpc.main.id
-	cidr_block        = "10.0.1.0/24"
-	availability_zone = "ap-northeast-1a"
+# プライベートサブネットの作成
+resource "aws_subnet" "private_db_1" {
+	vpc_id                  = "${aws_vpc.dev_env.id}"
+	cidr_block              = "10.0.1.0/24"
+	map_public_ip_on_launch = false
+	availability_zone       = "ap-northeast-1a"
 	tags = {
-		Name = "public-subnet-a"
+		Name = "private-db-1"
 	}
 }
 
-resource "aws_subnet" "public_c" {
-	// パブリックサブネットを作成 (アベイラビリティゾーンc)
-	vpc_id            = aws_vpc.main.id
-	cidr_block        = "10.0.2.0/24"
-	availability_zone = "ap-northeast-1c"
+# プライベートサブネットの作成
+resource "aws_subnet" "private_db_2" {
+	vpc_id                  = "${aws_vpc.dev_env.id}"
+	cidr_block              = "10.0.2.0/24"
+	map_public_ip_on_launch = false
+	availability_zone       = "ap-northeast-1c"
 	tags = {
-		Name = "public-subnet-c"
+		Name = "private-db-2"
 	}
 }
 
-resource "aws_subnet" "private_a" {
-	// プライベートサブネットを作成 (アベイラビリティゾーンa)
-	vpc_id            = aws_vpc.main.id
-	cidr_block        = "10.0.5.0/24"
-	availability_zone = "ap-northeast-1a"
+# DB Subnet Groupの設定
+resource "aws_db_subnet_group" "db_subnet" {
+	name        = "db-subnet"
+	description = "It is a DB subnet group on dev-env."
+	subnet_ids  =["${aws_subnet.private_db_1.id}","${aws_subnet.private_db_2.id}"]
 	tags = {
-		Name = "private-subnet-a"
+		Name = "db-subnet"
 	}
 }
 
-resource "aws_subnet" "private_c" {
-	// プライベートサブネットを作成 (アベイラビリティゾーンc)
-	vpc_id            = aws_vpc.main.id
-	cidr_block        = "10.0.6.0/24"
-	availability_zone = "ap-northeast-1c"
+# InternetGatewayの設定
+resource "aws_internet_gateway" "dev_env_gw" {
+	vpc_id     = "${aws_vpc.dev_env.id}"
+	depends_on = [aws_vpc.dev_env]
 	tags = {
-		Name = "private-subnet-c"
+		Name = "dev-env-gw"
 	}
 }
 
-resource "aws_route_table" "public" {
-	// パブリックサブネット用のルートテーブルを作成
-	vpc_id = aws_vpc.main.id
-	route {
-		cidr_block = "0.0.0.0/0"
-		gateway_id = aws_internet_gateway.igw.id
-	}
-	tags = {
-		Name = "public-route-table"
+# パブリックルートテーブルの作成
+resource "aws_route_table" "public_route" {
+	vpc_id = "${aws_vpc.dev_env.id}"
+	tags   = {
+		Name = "public-route"
 	}
 }
 
+# インターネットゲートウェイへのルートを設定
+resource "aws_route" "public_route" {
+	destination_cidr_block = "0.0.0.0/0"
+	gateway_id             = "${aws_internet_gateway.dev_env_gw.id}"
+	route_table_id         = "${aws_route_table.public_route.id}"
+}
+
+# ルートテーブルとパブリックサブネットの関連付け
 resource "aws_route_table_association" "public_a" {
-	// ルートテーブルをパブリックサブネット (アベイラビリティゾーンa) に関連付け
-	subnet_id      = aws_subnet.public_a.id
-	route_table_id = aws_route_table.public.id
+	subnet_id      = "${aws_subnet.public_web.id}"
+	route_table_id = "${aws_route_table.public_route.id}"
 }
 
-resource "aws_route_table_association" "public_c" {
-	// ルートテーブルをパブリックサブネット (アベイラビリティゾーンc) に関連付け
-	subnet_id      = aws_subnet.public_c.id
-	route_table_id = aws_route_table.public.id
-}
-
-resource "aws_security_group" "web" {
-	// Webサーバー用のセキュリティグループを定義
-	vpc_id      = aws_vpc.main.id
-	name        = "allow_http"
-	description = "Allow HTTP traffic"
+#  WEBサーバーのセキュリティグループの作成
+resource "aws_security_group" "web_security_group" {
+	vpc_id      = "${aws_vpc.dev_env.id}"
+	name        = "web_security_group"
+	description = "it is a security group on http of dev-env"
 
 	ingress {
 		from_port   = 80
@@ -117,7 +118,7 @@ resource "aws_security_group" "web" {
 		cidr_blocks = ["0.0.0.0/0"]
 	}
 
-		ingress {
+	ingress {
 		from_port   = 443
 		to_port     = 443
 		protocol    = "tcp"
@@ -132,17 +133,51 @@ resource "aws_security_group" "web" {
 	}
 }
 
-resource "aws_security_group" "rds" {
-	// RDS用のセキュリティグループを定義
-	vpc_id = aws_vpc.main.id
-	name = "allow_postgres"
-	description = "Allow PostgreSQL traffic"
+# WEBサーバーの設定
+resource "aws_instance" "web" {
+	ami                         = "ami-0f9fe1d9214628296"
+	instance_type               = "t2.micro"
+	subnet_id                   = "${aws_subnet.public_web.id}"
+	associate_public_ip_address = true
+	vpc_security_group_ids      = ["${aws_security_group.web_security_group.id}"]
+	key_name                    = "${var.key_name}"
+	root_block_device {
+		volume_type = "gp2"
+		volume_size = "20"
+	}
+	ebs_block_device {
+		device_name = "/dev/sdf"
+		volume_type = "gp2"
+		volume_size = "10"
+	}
+	tags = {
+		Name = "progate-aws-app"
+	}
+	user_data = <<-EOF
+		#!/bin/bash
+		sudo dnf update -y
+		sudo dnf install docker -y
+		sudo systemctl start docker
+		sudo systemctl enable docker
+		sudo usermod -a -G docker ec2-user
+		EOF
+}
+
+#  DBサーバーのセキュリティグループの作成
+resource "aws_security_group" "db-sg" {
+	name        = "db-sg"
+    description = "It is a security group on db of dev-env"
+    vpc_id      = aws_vpc.dev_env.id
+    tags = {
+       Name = "db-sg"
+    }
+
 
 	ingress {
-		from_port   = 5432
-		to_port     = 5432
-		protocol    = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
+		from_port                = 3306
+		to_port                  = 3306
+		protocol                 = "tcp"
+		security_groups = ["${aws_security_group.web_security_group.id}"]
 	}
 
 	egress {
@@ -153,29 +188,8 @@ resource "aws_security_group" "rds" {
 	}
 }
 
-resource "aws_instance" "web" {
-	// EC2インスタンスを定義
-	ami                         = "ami-0f9fe1d9214628296"
-	instance_type               = "t2.micro"
-	subnet_id                   = aws_subnet.public_a.id
-	associate_public_ip_address = true
-	vpc_security_group_ids      = [aws_security_group.web.id]
-	key_name                    = "${var.key_name}"
-	tags = {
-		Name = "progate-aws-app"
-	}
-	user_data = <<-EOF
-			#!/bin/bash
-			sudo dnf update -y
-			sudo dnf install docker -y
-			sudo systemctl start docker
-			sudo systemctl enable docker
-			sudo usermod -a -G docker ec2-user
-			EOF
-}
-
+# RDSサーバーの設定
 resource "aws_db_instance" "main" {
-	// RDSインスタンスを定義
 	identifier             = "progate-db"
 	allocated_storage      = 20
 	storage_type           = "gp2"
@@ -184,19 +198,13 @@ resource "aws_db_instance" "main" {
 	instance_class         = "db.t3.micro"
 	password               = "${var.rds_pass}"
 	username               = "${var.rds_username}"
-	db_subnet_group_name   = aws_db_subnet_group.main.name
-	vpc_security_group_ids = [aws_security_group.rds.id]
+	db_subnet_group_name   = "${aws_db_subnet_group.db_subnet.name}"
+	vpc_security_group_ids = ["${aws_security_group.db-sg.id}"]
 	skip_final_snapshot    = true
+	multi_az               = false
+	availability_zone      = "ap-northeast-1a"
+	publicly_accessible    = true
 	tags = {
 		Name = "progate-db"
-	}
-}
-
-resource "aws_db_subnet_group" "main" {
-	// RDS用のサブネットグループを定義
-	name       = "main-subnet-group"
-	subnet_ids = [aws_subnet.private_a.id, aws_subnet.private_c.id]
-	tags = {
-		Name = "main-subnet-group"
 	}
 }
