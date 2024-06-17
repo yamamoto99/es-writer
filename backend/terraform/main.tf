@@ -156,12 +156,12 @@ resource "aws_instance" "web" {
 	user_data = <<-EOF
 		#!/bin/bash
 		sudo dnf update -y
+		sudo dnf install -y postgresql15
 		sudo dnf install docker -y
-		sudo dnf install postgresql -y
 		sudo systemctl start docker
 		sudo systemctl enable docker
 		sudo usermod -a -G docker ec2-user
-		EOF
+	EOF
 }
 
 #  DBサーバーのセキュリティグループの作成
@@ -195,7 +195,7 @@ resource "aws_db_instance" "main" {
 	allocated_storage      = 20
 	storage_type           = "gp2"
 	engine                 = "postgres"
-	engine_version         = "16.3"
+	engine_version         = "15.7"
 	instance_class         = "db.t3.micro"
 	password               = "${var.rds_pass}"
 	username               = "${var.rds_username}"
