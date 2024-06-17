@@ -157,6 +157,7 @@ resource "aws_instance" "web" {
 		#!/bin/bash
 		sudo dnf update -y
 		sudo dnf install docker -y
+		sudo dnf install postgresql -y
 		sudo systemctl start docker
 		sudo systemctl enable docker
 		sudo usermod -a -G docker ec2-user
