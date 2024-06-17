@@ -105,7 +105,7 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 }
 
 func generatePromptWithBio(bio, question string) string {
-	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。\n%s", bio, question)
+	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。簡潔かつ具体的に記述し、#や*,-などは使用せずに平文で解答部分のみを出力してください。\n%s", bio, question)
 }
 
 func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +142,7 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 経歴情報を定義
-	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。将来的にはエンジニアとしてさまざまな開発に携わりたい。"
+	bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。webアプリケーションも作成した。(https://github.com/yamamoto99/es-writer)将来的にはエンジニアとしてさまざまな開発に携わりたい。普段は42Tokyoに通っており、CやGoを学んでいる。"
 
 	// 並列処理のためのWaitGroupを作成
 	var wg sync.WaitGroup
