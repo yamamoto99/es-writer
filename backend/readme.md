@@ -13,6 +13,10 @@ noneイメージを全削除できる有能コマンド
 docker image prune
 ```
 ## Terminalからpostgresを操作する
+動作しているコンテナの一覧を表示
+```shell
+docker ps
+```
 指定したコンテナ内で、インタラクティブなbashシェルを起動する
 ```shell
 docker exec -it <-コンテナID-> bash 
