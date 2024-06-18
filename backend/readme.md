@@ -8,6 +8,10 @@ Docker Composeを使ってサービスを停止し、ボリュームも削除
 ```shell
 docker compose down -v
 ```
+noneイメージを全削除できる有能コマンド
+```shell
+docker image prune
+```
 ## Terminalからpostgresを操作する
 指定したコンテナ内で、インタラクティブなbashシェルを起動する
 ```shell

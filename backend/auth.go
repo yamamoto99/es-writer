@@ -22,14 +22,29 @@ type Claims struct {
 }
 
 // リクエストボディの構造体を定義
-var input struct {
+var SignUp struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
 
-func loadAWSConfig(ctx context.Context) (aws.Config, error) {
-	return config.LoadDefaultConfig(ctx, config.WithRegion(cognitoRegion))
+var SignIn struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+var CheckEmail struct {
+	Username string `json:"username"`
+	VerificationCode string `json:"verificationCode"`
+}
+
+func createCognitoClient(ctx context.Context) (*cognitoidentityprovider.Client, error) {
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(cognitoRegion))
+	if err != nil {
+		return nil, err
+	}
+	svc := cognitoidentityprovider.NewFromConfig(cfg)
+	return svc, nil
 }
 
 func checkEmail(w http.ResponseWriter, r *http.Request) {
@@ -39,37 +54,30 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var checkEmail struct {
-		Username string `json:"username"`
-		VerificationCode string `json:"verificationCode"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&checkEmail)
+	err := json.NewDecoder(r.Body).Decode(&CheckEmail)
 	if err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 	
 	// 必須フィールドが空でないか確認
-	if checkEmail.Username == "" || checkEmail.VerificationCode == "" {
+	if CheckEmail.Username == "" || CheckEmail.VerificationCode == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
 
-	// AWSセッションを作成
-	cfg, err := loadAWSConfig(r.Context())
+	// AWS設定の読み込み
+	svc, err := createCognitoClient(r.Context())
 	if err != nil {
-		http.Error(w, "Failed to load AWS configuration", http.StatusInternalServerError)
+		http.Error(w, "Unable to load SDK config", http.StatusInternalServerError)
 		return
 	}
-
-	// Cognitoサービスクライアントを作成
-	svc := cognitoidentityprovider.NewFromConfig(cfg)
 
 	// 確認コードの入力を設定
 	confirmSignUpInput := &cognitoidentityprovider.ConfirmSignUpInput{
 		ClientId:         aws.String(clientId),
-		Username:         aws.String(checkEmail.Username),
-		ConfirmationCode: aws.String(checkEmail.VerificationCode),
+		Username:         aws.String(CheckEmail.Username),
+		ConfirmationCode: aws.String(CheckEmail.VerificationCode),
 	}
 
 	// Cognitoに確認コードを送信
@@ -93,37 +101,34 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// クライアントからのリクエストボディをデコードして、ユーザー情報を取得
-	err := json.NewDecoder(r.Body).Decode(&input)
+	err := json.NewDecoder(r.Body).Decode(&SignUp)
 	if err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
 	// 必須フィールドが空でないか確認
-	if input.Username == "" || input.Password == "" || input.Email == "" {
+	if SignUp.Username == "" || SignUp.Password == "" || SignUp.Email == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
 
-	// AWSセッションを作成
-	cfg, err := loadAWSConfig(r.Context())
+	// AWS設定の読み込み
+	svc, err := createCognitoClient(r.Context())
 	if err != nil {
-		http.Error(w, "Failed to load AWS configuration", http.StatusInternalServerError)
+		http.Error(w, "Unable to load SDK config", http.StatusInternalServerError)
 		return
 	}
-
-	// Cognitoサービスクライアントを作成
-	svc := cognitoidentityprovider.NewFromConfig(cfg)
 
 	// サインアップリクエストの入力を設定
 	signUpInput := &cognitoidentityprovider.SignUpInput{
 		ClientId: aws.String(clientId),
-		Username: aws.String(input.Username),
-		Password: aws.String(input.Password),
+		Username: aws.String(SignUp.Username),
+		Password: aws.String(SignUp.Password),
 		UserAttributes: []types.AttributeType{
 			{
 				Name:  aws.String("email"),
-				Value: aws.String(input.Email),
+				Value: aws.String(SignUp.Email),
 			},
 		},
 	}
@@ -149,7 +154,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userID, input.Username, input.Email, createdAt)
+	_, err = stmt.Exec(userID, SignUp.Username, SignUp.Email, createdAt)
 	if err != nil {
 		http.Error(w, "Database insert failed", http.StatusInternalServerError)
 		log.Println("Database insert error:", err)
@@ -166,29 +171,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	// http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
-func initiateAuth(ctx context.Context, username, password, clientID string) (*cognitoidentityprovider.InitiateAuthOutput, error) {
-	// AWSセッションを作成
-	cfg, err := loadAWSConfig(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to load SDK config, %v", err)
-	}
-
-	// Cognitoサービスクライアントを作成
-	svc := cognitoidentityprovider.NewFromConfig(cfg)
-
-	// 認証入力パラメータを設定
-	authInput := &cognitoidentityprovider.InitiateAuthInput{
-		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
-		ClientId: aws.String(clientID),
-		AuthParameters: map[string]string{
-			"USERNAME": username,
-			"PASSWORD": password,
-		},
-	}
-
-	return svc.InitiateAuth(ctx, authInput)
-}
-
 func signin(w http.ResponseWriter, r *http.Request) {
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
@@ -197,18 +179,31 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// クライアントからのリクエストボディをデコードして、認証情報を取得
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&input)
+	err := json.NewDecoder(r.Body).Decode(&SignIn)
 	if err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
+	// AWS設定の読み込み
+	svc, err := createCognitoClient(r.Context())
+	if err != nil {
+		http.Error(w, "Unable to load SDK config", http.StatusInternalServerError)
+		return
+	}
+
+	// 認証入力パラメータを設定
+	authInput := &cognitoidentityprovider.InitiateAuthInput{
+		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
+		ClientId: aws.String(clientId),
+		AuthParameters: map[string]string{
+			"USERNAME": SignIn.Username,
+			"PASSWORD": SignIn.Password,
+		},
+	}
+
 	// Cognitoにサインインリクエストを送信
-	authResp, err := initiateAuth(r.Context(), input.Username, input.Password, clientId)
+	authResp, err := svc.InitiateAuth(r.Context(), authInput)
 	if err != nil {
 		http.Error(w, "Authentication failed", http.StatusUnauthorized)
 		log.Println("Authentication error:", err)
