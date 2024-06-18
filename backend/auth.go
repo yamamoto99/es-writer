@@ -32,6 +32,59 @@ func loadAWSConfig(ctx context.Context) (aws.Config, error) {
 	return config.LoadDefaultConfig(ctx, config.WithRegion(cognitoRegion))
 }
 
+func checkEmail(w http.ResponseWriter, r *http.Request) {
+	// POSTメソッド以外は許可しない
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var checkEmail struct {
+		Username string `json:"username"`
+		VerificationCode string `json:"verificationCode"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&checkEmail)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+	
+	// 必須フィールドが空でないか確認
+	if checkEmail.Username == "" || checkEmail.VerificationCode == "" {
+		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		return
+	}
+
+	// AWSセッションを作成
+	cfg, err := loadAWSConfig(r.Context())
+	if err != nil {
+		http.Error(w, "Failed to load AWS configuration", http.StatusInternalServerError)
+		return
+	}
+
+	// Cognitoサービスクライアントを作成
+	svc := cognitoidentityprovider.NewFromConfig(cfg)
+
+	// 確認コードの入力を設定
+	confirmSignUpInput := &cognitoidentityprovider.ConfirmSignUpInput{
+		ClientId:         aws.String(clientId),
+		Username:         aws.String(checkEmail.Username),
+		ConfirmationCode: aws.String(checkEmail.VerificationCode),
+	}
+
+	// Cognitoに確認コードを送信
+	_, err = svc.ConfirmSignUp(r.Context(), confirmSignUpInput)
+	if err != nil {
+		http.Error(w, "Confirmation failed", http.StatusInternalServerError)
+		log.Println("Confirmation error:", err)
+		return
+	}
+
+	// 確認成功のレスポンスを返す
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "User confirmed successfully")
+}
+
 func signup(w http.ResponseWriter, r *http.Request) {
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
@@ -106,6 +159,11 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	// サインアップ成功のレスポンスを返す
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, "User signed up successfully")
+
+	// // リダイレクト先のURL
+	// redirectURL := "/checkEmail"
+	// // リダイレクト
+	// http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
 func initiateAuth(ctx context.Context, username, password, clientID string) (*cognitoidentityprovider.InitiateAuthOutput, error) {

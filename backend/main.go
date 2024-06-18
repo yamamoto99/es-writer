@@ -67,6 +67,7 @@ func main() {
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/signin", signin)
 	http.HandleFunc("/signup", signup)
+	http.HandleFunc("/checkEmail", checkEmail)
 	http.HandleFunc("/welcome", welcome)
 	http.HandleFunc("/getAnswers", processQuestionsWithAI)
 	log.Fatal(http.ListenAndServe(":8080", nil))
