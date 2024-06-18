@@ -12,7 +12,7 @@ noneイメージを全削除できる有能コマンド
 ```shell
 docker image prune
 ```
-## Terminalからpostgresを操作する
+## TerminalからDBを操作する
 動作しているコンテナの一覧を表示
 ```shell
 docker ps
@@ -24,4 +24,23 @@ docker exec -it <-コンテナID-> bash
 PostgreSQLに接続する。ユーザー名はpostgresで、データベースはtestdb
 ```shell
 psql -U postgres -d testdb
+```
+## pgAdminからDBを操作する
+localhost5050にアクセス
+```shell
+http://localhost:5050
+```
+下記でログイン
+```
+Email Address/Username:pgadmin4@pgadmin.org
+Password:admin
+```
+DBに接続する
+```
+Servers->登録->サーバー
+名前:自由
+ホスト名/アドレス:db
+管理者用データベース:postgres
+ユーザー名：postgres
+パスワード:postgres
 ```
