@@ -61,8 +61,19 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	// 必須フィールドが空でないか確認
-	if CheckEmail.Username == "" || CheckEmail.VerificationCode == "" {
+	if CheckEmail.VerificationCode == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		return
+	}
+
+	// クッキーからusernameを取得
+	c, err := r.Cookie("username")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, fmt.Sprintf("%vnot found: %v", "username", err), http.StatusBadRequest)
+			return
+		}
+		http.Error(w, fmt.Sprintf("Invalid request: Cookie retrieval error: %v", err), http.StatusBadRequest)
 		return
 	}
 
@@ -76,7 +87,7 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 	// 確認コードの入力を設定
 	confirmSignUpInput := &cognitoidentityprovider.ConfirmSignUpInput{
 		ClientId:         aws.String(clientId),
-		Username:         aws.String(CheckEmail.Username),
+		Username:         aws.String(c.Value),
 		ConfirmationCode: aws.String(CheckEmail.VerificationCode),
 	}
 
@@ -91,6 +102,49 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 	// 確認成功のレスポンスを返す
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "User confirmed successfully")
+}
+
+func resentEmail(w http.ResponseWriter, r *http.Request) {
+	// POSTメソッド以外は許可しない
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// クッキーからusernameを取得
+	c, err := r.Cookie("username")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, fmt.Sprintf("%vnot found: %v", "username", err), http.StatusBadRequest)
+			return
+		}
+		http.Error(w, fmt.Sprintf("Invalid request: Cookie retrieval error: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// AWS設定の読み込み
+	svc, err := createCognitoClient(r.Context())
+	if err != nil {
+		http.Error(w, "Unable to load SDK config", http.StatusInternalServerError)
+		return
+	}
+
+	// 再送リクエストの作成
+	input := &cognitoidentityprovider.ResendConfirmationCodeInput{
+		ClientId: aws.String(clientId),
+		Username: aws.String(c.Value),
+	}
+
+	// 確認メール再送の実行
+	_, err = svc.ResendConfirmationCode(context.TODO(), input)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Confirmation email resend error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 成功メッセージの送信
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("The confirmation email has been resent."))
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
@@ -161,14 +215,19 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ユーザー名をCookieに保存
+	http.SetCookie(w, &http.Cookie{
+		Name:     "username",
+		Value:    SignUp.Username,
+		Expires:  time.Now().Add(10 * time.Minute),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
 	// サインアップ成功のレスポンスを返す
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, "User signed up successfully")
-
-	// // リダイレクト先のURL
-	// redirectURL := "/checkEmail"
-	// // リダイレクト
-	// http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 }
 
 func signin(w http.ResponseWriter, r *http.Request) {
