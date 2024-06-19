@@ -23,34 +23,58 @@ const ProfileForm = () => {
     }
   };
 
+  const formStyle = {
+    maxWidth: "600px",
+    margin: "0 auto"
+  };
+
+  const labelStyle = {
+    display: "block",
+    marginBottom: "10px"
+  };
+
+  const textareaStyle = {
+    width: "100%",
+    height: "100px",
+    marginBottom: "20px",
+  };
+
+  const buttonStyle = {
+    display: "block",
+    margin: "0 auto",
+  };
+
   return (
-    <form onSubmit={handleProfileSubmit}>
+    <form onSubmit={handleProfileSubmit} style={formStyle}>
       <h2>Profile Information</h2>
-      <label>
+      <label style={labelStyle}>
         Bio:
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           required
+          style={textareaStyle}
         />
       </label>
-      <label>
+      <label style={labelStyle}>
         Experience:
         <textarea
           value={experience}
           onChange={(e) => setExperience(e.target.value)}
           required
+          style={textareaStyle}
         />
       </label>
-      <label>
+      <label style={labelStyle}>
         Projects:
         <textarea
           value={projects}
           onChange={(e) => setProjects(e.target.value)}
           required
+          style={textareaStyle}
         />
       </label>
-      <button type="submit">Save Profile</button>
+      <button type="submit" style={buttonStyle}>Save Profile</button>
     </form>
   );
 };
