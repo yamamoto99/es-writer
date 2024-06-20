@@ -58,7 +58,7 @@ resource "aws_subnet" "private_db_2" {
 	}
 }
 
-# DB Subnet Groupの設定
+# DB サブネットグループの設定
 resource "aws_db_subnet_group" "db_subnet" {
 	name        = "db-subnet"
 	description = "It is a DB subnet group on dev-env."
@@ -175,9 +175,9 @@ resource "aws_security_group" "db-sg" {
 
 
 	ingress {
-		from_port                = 3306
-		to_port                  = 3306
-		protocol                 = "tcp"
+		from_port       = 3306
+		to_port         = 3306
+		protocol        = "tcp"
 		security_groups = ["${aws_security_group.web_security_group.id}"]
 	}
 
