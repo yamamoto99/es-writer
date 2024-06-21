@@ -1,0 +1,47 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.App-header {
+    background-color: #282c34;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.entryBox {
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 80%;
+    max-width: 600px;
+}
+
+.long {
+    width: 100%;
+    height: 150px;
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    font-size: 1.5em;
+    margin-top: 20px;
+}
