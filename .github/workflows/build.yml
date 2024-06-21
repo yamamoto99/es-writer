@@ -1,61 +1,61 @@
-# name: build and deploy
-# run-name: 🚀 イメージを生成しEC2にデプロイ 🚀
-# on:
-#   push:
-#     branches:
-#       - main
-# env:
-#   REGISTRY: ghcr.io
-#   IMAGE_NAME: ${{ github.repository }}
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: read
-#       packages: write
-#     steps:
-#       - name: リポジトリをチェックアウト
-#         uses: actions/checkout@v3
+name: build and deploy
+run-name: 🚀 イメージを生成しEC2にデプロイ 🚀
+on:
+  push:
+    branches:
+      - main
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v3
 
-#       - name: セットアップ Docker Compose
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install docker-compose -y
+      - name: セットアップ Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
 
-#       - name: Docker Compose ビルド
-#         working-directory: ./backend
-#         run: docker-compose build
+      - name: Docker Compose ビルド
+        working-directory: ./backend
+        run: docker-compose build
 
-#       - name: コンテナレジストリにログイン
-#         uses: docker/login-action@v2
-#         with:
-#           registry: ${{ env.REGISTRY }}
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: コンテナレジストリにログイン
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Docker用のメタデータ（タグ、ラベル）を抽出
-#         id: meta
-#         uses: docker/metadata-action@v3
-#         with:
-#           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Docker用のメタデータ（タグ、ラベル）を抽出
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-#       - name: 変数の確認
-#         run: |
-#           echo 'Current path:'
-#           pwd
-#           echo 'Tag: ${{ steps.meta.outputs.tags }}'
-#           echo 'Label: ${{ steps.meta.outputs.labels }}'
+      - name: 変数の確認
+        run: |
+          echo 'Current path:'
+          pwd
+          echo 'Tag: ${{ steps.meta.outputs.tags }}'
+          echo 'Label: ${{ steps.meta.outputs.labels }}'
 
-#       - name: 環境変数の読み込み
-#         run: |
-#           echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> $GITHUB_ENV
-#           echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
-#           echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> $GITHUB_ENV
-#           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GITHUB_ENV
-#           echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-#           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-#           echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-#           echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
+      - name: 環境変数の読み込み
+        run: |
+          echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> $GITHUB_ENV
+          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> $GITHUB_ENV
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GITHUB_ENV
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
 
 #       - name: Dockerイメージをビルドしてプッシュ
 #         uses: docker/build-push-action@v3
