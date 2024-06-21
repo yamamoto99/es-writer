@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-const SignIn = () => {
+const signIn = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
@@ -20,6 +20,7 @@ const SignIn = () => {
 
     if (response.ok) {
       console.log("SignIn successful")
+      //todo あとでどうにかします！！！！！！！！！
       navigate("/profileForm")
     } else {
       console.error("Sign in failed")
@@ -49,4 +50,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default signIn

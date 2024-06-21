@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-const SignUp = () => {
+const signUp = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
@@ -57,4 +57,4 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default signUp
