@@ -21,7 +21,7 @@ const signUp = () => {
 
     if (response.ok) {
       console.log("SignUp successful")
-      navigate("/signin")
+      navigate("/checkEmail")
     } else {
       console.error("Sign up failed")
       alert("Sign up failed")
