@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import indexContents from "./indexContents";
+import genAnswer from "./genAnswer";
 import openProfileForm from "./openProfileForm";
 
 function IndexPopup() {
@@ -30,7 +30,7 @@ function IndexPopup() {
   }else{
     return (
       <div style={{ width: '150px', height: '75px' }}>
-        <button onClick={indexContents}>回答生成</button>
+        <button onClick={genAnswer}>回答生成</button>
         <button onClick={openProfileForm}>経歴入力</button>
       </div>
     );
