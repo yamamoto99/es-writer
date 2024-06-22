@@ -1,19 +1,9 @@
 name: deploy
-run-name: Terraformの実行とEC2へのデプロイ 🚀
+run-name: EC2へのデプロイ 🚀
 on:
   push:
     branches:
       - main
-env:
-  COGNITO_REGION: ${{ secrets.COGNITO_REGION }}
-  COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
-  TOKEN_KEY_URL: ${{ secrets.TOKEN_KEY_URL }}
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USER: ${{ secrets.DB_USER }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_NAME: ${{ secrets.DB_NAME }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,15 +28,15 @@ jobs:
           # アプリケーションのデプロイ
           cd /home/ec2-user/app
           git pull origin main
-          rm -f .env
-          echo "COGNITO_REGION=${COGNITO_REGION}" >> .env
-          echo "COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}" >> .env
-          echo "TOKEN_KEY_URL=${TOKEN_KEY_URL}" >> .env
-          echo "DB_HOST=${DB_HOST}" >> .env
-          echo "DB_USER=${DB_USER}" >> .env
-          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-          echo "DB_NAME=${DB_NAME}" >> .env
-          echo "DB_PORT=${DB_PORT}" >> .env
+          rm -f /home/ec2-user/app/.env
+          echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> /home/ec2-user/app/.env
+          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }} >> /home/ec2-user/app/.env
+          echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> /home/ec2-user/app/.env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> /home/ec2-user/app/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> /home/ec2-user/app/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/ec2-user/app/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> /home/ec2-user/app/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> /home/ec2-user/app/.env
           
           # アプリケーションの起動
           cd /home/ec2-user/app/backend
