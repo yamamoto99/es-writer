@@ -1,9 +1,15 @@
 import React, { useState } from "react"
+import { useStorage } from "@plasmohq/storage/hook"
+import { useNavigate } from "react-router-dom"
+
 import openProfileForm from "./openProfileForm"
 
 const signIn = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
+
+  const [loginState, setLoginState] = useStorage<string>("loginState");
 
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -27,6 +33,7 @@ const signIn = () => {
   }
 
   return (
+    <>
     <form onSubmit={handleSignIn}>
       <h2>Sign In</h2>
       <input
@@ -45,6 +52,8 @@ const signIn = () => {
       />
       <button type="submit">Sign In</button>
     </form>
+    <button onClick={() => {setLoginState("not-logged-in");navigate("/")}}>Back</button>
+    </>
   )
 }
 
