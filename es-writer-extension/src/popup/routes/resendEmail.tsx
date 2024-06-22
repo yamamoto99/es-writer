@@ -36,7 +36,7 @@ const resendEmail = () => {
         onChange={(e) => setVerificationCode(e.target.value)}
         required
       />
-      <button type="submit">resend Email</button>
+      <button type="submit">Check Email</button>
     </form>
   )
 }

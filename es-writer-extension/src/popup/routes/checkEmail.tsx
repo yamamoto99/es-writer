@@ -7,27 +7,48 @@ const checkEmail = () => {
   const navigate = useNavigate()
 
   const handleCheckEmail = async (event: React.FormEvent) => {
-	event.preventDefault()
-	console.log("Check Email form submitted")
+	  event.preventDefault()
+	  console.log("Check Email form submitted")
 
-	const response = await fetch("http://localhost:8080/checkEmail", {
-	  method: "POST",
-	  headers: {
-		"Content-Type": "application/json"
-	  },
-	  body: JSON.stringify({ username, verificationCode })
-	})
+	  const response = await fetch("http://localhost:8080/checkEmail", {
+	    method: "POST",
+	    headers: {
+	  	"Content-Type": "application/json"
+	    },
+	    body: JSON.stringify({ username, verificationCode })
+	  })
 
-	if (response.ok) {
-	  console.log("Check Email successful")
-	  navigate("/signin")
-	} else {
-	  console.error("Check Email failed")
-	  alert("Check Email failed")
-	}
-  } 
+	  if (response.ok) {
+	    console.log("Check Email successful")
+	    navigate("/signin")
+	  } else {
+	    console.error("Check Email failed")
+	    alert("Check Email failed")
+	  }
+  }
+
+  function handleResendEmail() {
+    console.log("Resend Email form submitted")
+
+	  fetch("http://localhost:8080/checkEmail", {
+	    method: "POST",
+	    headers: {
+	  	"Content-Type": "application/json"
+	    },
+	    body: JSON.stringify({ username, verificationCode })
+	  }).then(response => {
+      if (response.ok) {
+        console.log("Check Email successful")
+        navigate("/resendEmail")
+      } else {
+        console.error("Check Email failed")
+        alert("Check Email failed")
+      }
+    })
+  }
 
   return (
+    <>
     <form onSubmit={handleCheckEmail}>
       <h2>Check Email</h2>
       <input
@@ -45,8 +66,9 @@ const checkEmail = () => {
         required
       />
       <button type="submit">Check Email</button>
-      <button onClick={() => navigate("/resendEmail")}>resend Email</button>
     </form>
+    <button onClick={handleResendEmail}>resend Email</button>
+    </>
   )
 }
 
