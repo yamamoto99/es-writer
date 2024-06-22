@@ -2,7 +2,7 @@
 # EC2 Instance
 # ====================
 resource "aws_instance" "progate-web" {
-	ami                         = "ami-034bc4e4fcccfe844"
+	ami                         = "ami-0f226ae5ce4b11922"
 	instance_type               = "t2.micro"
 	subnet_id                   = "${aws_subnet.public_web.id}"
 	associate_public_ip_address = true

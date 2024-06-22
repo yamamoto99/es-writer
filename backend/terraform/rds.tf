@@ -16,7 +16,7 @@ resource "aws_db_instance" "main" {
 	vpc_security_group_ids = ["${aws_security_group.progate-db-sg.id}"]
 	skip_final_snapshot    = true
 	multi_az               = false
-	availability_zone      = "ap-northeast-1a"
+	availability_zone      = "us-west-2a"
 	publicly_accessible    = true
 	tags = {
 		Name = "progate-db"
