@@ -18,7 +18,7 @@ COPY . .
 RUN go build -o main .
 
 # ポート8080を公開
-EXPOSE 8080
+EXPOSE 80
 
 # APIサーバーを実行
 CMD ["./main"]
