@@ -1,4 +1,18 @@
 # ====================
+# RDS Parameter Group
+# ====================
+resource "aws_db_parameter_group" "progate-db-pg" {
+  name        = "progate-db-pg"
+  family      = "postgres16"
+  description = "Progate DB parameter group"
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "0"
+  }
+}
+
+# ====================
 # RDS Instance
 # ====================
 # RDSサーバーの設定
@@ -14,6 +28,7 @@ resource "aws_db_instance" "main" {
 	username               = "${var.rds_username}"
 	db_subnet_group_name   = "${aws_db_subnet_group.progate-db-subnet.name}"
 	vpc_security_group_ids = ["${aws_security_group.progate-db-sg.id}"]
+	parameter_group_name   = "${aws_db_parameter_group.progate-db-pg.name}"
 	skip_final_snapshot    = true
 	multi_az               = false
 	availability_zone      = "us-west-2a"
