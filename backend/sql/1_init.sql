@@ -4,5 +4,8 @@ CREATE TABLE users (
     id VARCHAR(255) NOT NULL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    bio TEXT,
+    experience TEXT,
+    projects TEXT
 );
