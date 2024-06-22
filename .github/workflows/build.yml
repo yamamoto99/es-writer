@@ -3,7 +3,7 @@ run-name: 🚀 イメージを生成しEC2にデプロイ 🚀
 on:
   push:
     branches:
-      - feat:deploy
+      - feat/deploy
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
