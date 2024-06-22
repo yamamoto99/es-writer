@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useStorage } from "@plasmohq/storage/hook"
 import { useNavigate } from "react-router-dom"
 
 const signUp = () => {
@@ -6,6 +7,8 @@ const signUp = () => {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const navigate = useNavigate()
+
+  const [loginState, setLoginState] = useStorage<string>("loginState");
 
   const handleSignUp = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -21,6 +24,7 @@ const signUp = () => {
 
     if (response.ok) {
       console.log("SignUp successful")
+      setLoginState("checkEmail")
       navigate("/checkEmail")
     } else {
       console.error("Sign up failed")
@@ -29,6 +33,7 @@ const signUp = () => {
   }
 
   return (
+    <>
     <form onSubmit={handleSignUp}>
       <h2>Sign Up</h2>
       <input
@@ -54,6 +59,8 @@ const signUp = () => {
       />
       <button type="submit">Sign Up</button>
     </form>
+    <button onClick={() => {setLoginState("not-logged-in");navigate("/")}}>Back</button>
+    </>
   )
 }
 
