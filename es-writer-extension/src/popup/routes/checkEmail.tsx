@@ -27,19 +27,14 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch("http://localhost:8080/checkEmail", {
+	  fetch("http://localhost:8080/resendEmail", {
 	    method: "POST",
-	    headers: {
-	  	"Content-Type": "application/json"
-	    },
-	    body: JSON.stringify({ verificationCode })
 	  }).then(response => {
       if (response.ok) {
         console.log("Check Email successful")
-        navigate("/resendEmail")
       } else {
         console.error("Check Email failed")
-        alert("Check Email failed")
+        alert("Resend Email failed")
       }
     })
   }

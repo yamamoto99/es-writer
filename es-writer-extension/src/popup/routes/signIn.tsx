@@ -25,6 +25,7 @@ const signIn = () => {
 
     if (response.ok) {
       console.log("SignIn successful")
+      setLoginState("logged-in")
       openProfileForm()
     } else {
       console.error("Sign in failed")
