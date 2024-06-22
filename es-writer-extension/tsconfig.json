@@ -12,6 +12,5 @@
   },
   "include": [
     ".plasmo/index.d.ts",
-    "src"
   ]
 }

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
-	"context"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -34,7 +34,7 @@ var SignIn struct {
 }
 
 var CheckEmail struct {
-	Username string `json:"username"`
+	Username         string `json:"username"`
 	VerificationCode string `json:"verificationCode"`
 }
 
@@ -48,6 +48,17 @@ func createCognitoClient(ctx context.Context) (*cognitoidentityprovider.Client, 
 }
 
 func checkEmail(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// プリフライトリクエスト
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -59,7 +70,7 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-	
+
 	// 必須フィールドが空でないか確認
 	if CheckEmail.VerificationCode == "" {
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
@@ -104,7 +115,18 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "User confirmed successfully")
 }
 
-func resentEmail(w http.ResponseWriter, r *http.Request) {
+func resendEmail(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// プリフライトリクエスト
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -144,10 +166,21 @@ func resentEmail(w http.ResponseWriter, r *http.Request) {
 
 	// 成功メッセージの送信
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("The confirmation email has been resent."))
+	w.Write([]byte("The confirmation email has been resend."))
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// プリフライトリクエスト
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -231,6 +264,17 @@ func signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func signin(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// プリフライトリクエスト
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	// POSTメソッド以外は許可しない
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
