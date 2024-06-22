@@ -1,97 +1,56 @@
-name: build
-run-name: DockerImageを生成 🚀
+name: deploy
+run-name: Terraformの実行とEC2へのデプロイ 🚀
 on:
   push:
     branches:
       - main
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  COGNITO_REGION: ${{ secrets.COGNITO_REGION }}
+  COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+  TOKEN_KEY_URL: ${{ secrets.TOKEN_KEY_URL }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
-      # 環境変数の読み込み
-      - name: Set environment variables
-        run: |
-          echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> $GITHUB_ENV
-          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> $GITHUB_ENV
-          echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> $GITHUB_ENV
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> $GITHUB_ENV
-
-      # リポジトリをチェックアウト
-      - name: Checkout
+      - name: リポジトリをチェックアウト
         uses: actions/checkout@v3
 
-      # コンテナレジストリにログイン
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
+      - name: AWS CLIのインストール
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # Docker用のメタデータ（タグ、ラベル）を抽出
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Add SSH key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key && chmod 600 private_key
 
-      # 変数の確認
-      - name: Check variables
+      - name: Copy Terraform and Application Files
         run: |
-          echo 'Current path:'
-          pwd
-          echo 'Tag: ${{ steps.meta.outputs.tags }}'
-          echo 'Label: ${{ steps.meta.outputs.labels }}'
+          scp -i private_key -o StrictHostKeyChecking=no -r ./backend ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/app
 
-      # Dockerイメージをビルドしてプッシュ
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-#       - name: Dockerイメージをビルドしてプッシュ
-#         uses: docker/build-push-action@v3
-#         with:
-#           context: ./backend
-#           file: ./backend/Dockerfile
-#           push: true
-#           tags: ${{ steps.meta.outputs.tags }}
-#           labels: ${{ steps.meta.outputs.labels }}
-#           build-args: |
-#             COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-#             COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-#             TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}
-#             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
-#             DB_NAME=${{ secrets.DB_NAME }}
-#             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-#             DB_USER=${{ secrets.DB_USER }}
-#             DB_HOST=${{ secrets.DB_HOST }}
-
-
-      # - name: デプロイ用SSHキーを設定
-      #   uses: webfactory/ssh-agent@v0.5.4
-      #   with:
-      #     ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      # - name: EC2にデプロイ
-      #   run: |
-      #     ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-      #       docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-      #       docker stop myapp || true
-      #       docker rm myapp || true
-      #       docker run -d --name myapp -p 80:80 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-      #     EOF
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          
+          # アプリケーションのデプロイ
+          cd /app
+          git pull origin main
+          
+          # Terraformの実行
+          cd /home/ec2-user/app/backend/terraform
+          terraform init
+          terraform apply -auto-approve
+          
+          # アプリケーションの起動
+          docker build -t progate-app .
+          docker stop progate-app || true
+          docker rm progate-app || true
+          docker run -d --name progate-app -p 8080:8080 progate-app
+          EOF
