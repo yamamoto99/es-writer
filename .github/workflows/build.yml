@@ -36,7 +36,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i progate.pem  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           
           # アプリケーションのデプロイ
-          cd /app
+          cd /home/ec2-user/app
           git pull origin main
           
           # アプリケーションの起動
