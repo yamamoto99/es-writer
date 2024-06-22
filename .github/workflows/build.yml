@@ -43,5 +43,5 @@ jobs:
           docker build -t progate-app .
           docker stop progate-app || true
           docker rm progate-app || true
-          docker run -d --name progate-app -p 8080:8080 progate-app
+          docker run -d --name progate-app -p 80:80 progate-app
           EOF
