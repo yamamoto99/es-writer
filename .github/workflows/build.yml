@@ -41,6 +41,7 @@ jobs:
           # アプリケーションの起動
           cd /home/ec2-user/app/backend
           docker stop progate-app || true
+          docker rm progate-app || true
           docker image prune -f
           docker build -t progate-app .
           docker run -d --name progate-app -p 80:8080 progate-app
