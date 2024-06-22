@@ -39,11 +39,6 @@ jobs:
           cd /app
           git pull origin main
           
-          # Terraformの実行
-          cd /home/ec2-user/app/backend/terraform
-          terraform init
-          terraform apply -auto-approve
-          
           # アプリケーションの起動
           docker build -t progate-app .
           docker stop progate-app || true
