@@ -1,21 +1,20 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-const checkEmail = () => {
-  const [username, setUsername] = useState("")
+const resendEmail = () => {
   const [verificationCode, setVerificationCode] = useState("")
   const navigate = useNavigate()
 
-  const handleCheckEmail = async (event: React.FormEvent) => {
+  const handleResendEmail = async (event: React.FormEvent) => {
 	event.preventDefault()
-	console.log("Check Email form submitted")
+	console.log("Resend Email form submitted")
 
 	const response = await fetch("http://localhost:8080/checkEmail", {
 	  method: "POST",
 	  headers: {
 		"Content-Type": "application/json"
 	  },
-	  body: JSON.stringify({ username, verificationCode })
+	  body: JSON.stringify({ verificationCode })
 	})
 
 	if (response.ok) {
@@ -28,15 +27,8 @@ const checkEmail = () => {
   } 
 
   return (
-    <form onSubmit={handleCheckEmail}>
+    <form onSubmit={handleResendEmail}>
       <h2>Check Email</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
       <input
         type="text"
         placeholder="VerificationCode"
@@ -44,10 +36,9 @@ const checkEmail = () => {
         onChange={(e) => setVerificationCode(e.target.value)}
         required
       />
-      <button type="submit">Check Email</button>
-      <button onClick={() => navigate("/resendEmail")}>resend Email</button>
+      <button type="submit">resend Email</button>
     </form>
   )
 }
 
-export default checkEmail
+export default resendEmail

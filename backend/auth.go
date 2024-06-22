@@ -115,7 +115,7 @@ func checkEmail(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "User confirmed successfully")
 }
 
-func resentEmail(w http.ResponseWriter, r *http.Request) {
+func resendEmail(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -166,7 +166,7 @@ func resentEmail(w http.ResponseWriter, r *http.Request) {
 
 	// 成功メッセージの送信
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("The confirmation email has been resent."))
+	w.Write([]byte("The confirmation email has been resend."))
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
