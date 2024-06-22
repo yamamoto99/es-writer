@@ -90,8 +90,8 @@ resource "aws_security_group" "progate-web-sg" {
 	name        = "progate-web-sg"
 	description = "progate-web-sg"
 	tags = {
-       Name = "progate-web-sg"
-    }
+	   Name = "progate-web-sg"
+	}
 
 	ingress {
 		from_port   = 80
@@ -125,11 +125,11 @@ resource "aws_security_group" "progate-web-sg" {
 # DBサーバーのセキュリティグループ
 resource "aws_security_group" "progate-db-sg" {
 	name        = "progate-db-sg"
-    description = "progate-db-sg"
-    vpc_id      = aws_vpc.progate.id
-    tags = {
-       Name = "db-sg"
-    }
+	description = "progate-db-sg"
+	vpc_id      = aws_vpc.progate.id
+	tags = {
+	   Name = "db-sg"
+	}
 
 	ingress {
 		from_port       = 5432
