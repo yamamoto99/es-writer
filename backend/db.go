@@ -50,5 +50,5 @@ func saveProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Sentence updated successfully for user ID %s", userID)
+	fmt.Fprintf(w, "Profile updated successfully for user ID %s", userID)
 }
