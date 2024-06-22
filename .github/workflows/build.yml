@@ -33,7 +33,7 @@ jobs:
 
       - name: SSH into EC2 and deploy
         run: |
-          ssh -i private_key  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i private_key  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           
           # アプリケーションのデプロイ
           cd /app
