@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -39,6 +40,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("server started...")
 	var err error
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	var dbHost string = os.Getenv("DB_HOST")
 	var dbUser string = os.Getenv("DB_USER")
 	var dbPassword string = os.Getenv("DB_PASSWORD")

@@ -38,6 +38,15 @@ jobs:
           # アプリケーションのデプロイ
           cd /home/ec2-user/app
           git pull origin main
+          rm -f .env
+          echo "COGNITO_REGION=${COGNITO_REGION}" >> .env
+          echo "COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}" >> .env
+          echo "TOKEN_KEY_URL=${TOKEN_KEY_URL}" >> .env
+          echo "DB_HOST=${DB_HOST}" >> .env
+          echo "DB_USER=${DB_USER}" >> .env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+          echo "DB_NAME=${DB_NAME}" >> .env
+          echo "DB_PORT=${DB_PORT}" >> .env
           
           # アプリケーションの起動
           cd /home/ec2-user/app/backend
