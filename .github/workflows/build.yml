@@ -29,22 +29,18 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Add SSH key
-        run: echo "${{ secrets.EC2_SSH_KEY }}" > private_key && chmod 600 private_key
+        run: echo "${{ secrets.EC2_SSH_KEY }}" > progate.pem && chmod 600 progate.pem
 
       - name: SSH into EC2 and deploy
         run: |
-          ssh -i private_key  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i progate.pem  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           
           # アプリケーションのデプロイ
-          cd /app
+          cd /home/ec2-user/app
           git pull origin main
           
-          # Terraformの実行
-          cd /home/ec2-user/app/backend/terraform
-          terraform init
-          terraform apply -auto-approve
-          
           # アプリケーションの起動
+          cd /home/ec2-user/app/backend
           docker build -t progate-app .
           docker stop progate-app || true
           docker rm progate-app || true
