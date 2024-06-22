@@ -54,7 +54,7 @@ func sendToAi(ctx context.Context, question string) (string, error) {
             ),
         ),
     )
-    fmt.Println(os.Getenv("AWS_ACCESS_KEY_ID"),os.Getenv("AWS_SECRET_ACCESS_KEY"))
+    // fmt.Println(os.Getenv("AWS_ACCESS_KEY_ID"),os.Getenv("AWS_SECRET_ACCESS_KEY"))
     
     if err != nil {
         return "", fmt.Errorf("failed to load AWS config: %w", err)
@@ -90,11 +90,12 @@ func sendToAi(ctx context.Context, question string) (string, error) {
 		ContentType: aws.String("application/json"),
 		Body:        reqBody,
 	})
+
     if err != nil {
         return "", fmt.Errorf("failed to invoke model: %w", err)
     }
 
-	fmt.Printf("Response Body: %s\n", string(output.Body))
+	// fmt.Printf("Response Body: %s\n", string(output.Body))
 
     // レスポンスをパース
     var response ClaudeResponse
@@ -115,10 +116,17 @@ func generatePromptWithBio(bio, question string) string {
 }
 
 func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
+	// 時間計測開始
+	startTime := time.Now()
+
     // CORSヘッダーを追加
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// コンテキストを設定
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
 
     // OPTIONSリクエストに対する処理
     if r.Method == http.MethodOptions {
@@ -148,16 +156,20 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
     // }
 
     // 質問の抽出
-    questions := extractQuestions(string(cleanHtml))
+    questions, err := filterQuestions(ctx, string(cleanHtml))
+	if err != nil {
+		log.Fatalf("Error filtering questions: %v", err)
+	}
+
     if len(questions) == 0 {
         log.Printf("No questions found in the HTML content")
         http.Error(w, "No questions found", http.StatusBadRequest)
         return
     }
-    //TOOD htmlを投げて質問に答えさせる
-    for i:=0; i < len(questions); i++{
-        fmt.Println(questions[i])
-    }
+    //TOOD htmlを投げて質問に答えさせる(完了)
+    // for i:=0; i < len(questions); i++{
+    //     fmt.Println(questions[i])
+    // }
 
     // 経歴情報を定義
     bio := "大学一年生の頃に海外で英語を一年学び、その後、大学でプログラミングの勉強をし、今は個人開発などをしている。webアプリケーションも作成した。(https://github.com/yamamoto99/es-writer)将来的にはエンジニアとしてさまざまな開発に携わりたい。普段は42Tokyoに通っており、CやGoを学んでいる。"
@@ -165,9 +177,6 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
     // 並列処理のためのWaitGroupを作成
     var wg sync.WaitGroup
 
-    // コンテキストを設定
-    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-    defer cancel()
 
     type Answer struct {
         Question string `json:"question"`
@@ -176,10 +185,8 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 
     answers := make([]Answer, len(questions))
 
-    // 時間計測開始
-    startTime := time.Now()
 
-    // 質問ごとにゴルーチンを作成して並列処理を実行
+    // 質問ごとにゴルーチンを作成して非同期処理を実行
     for i, question := range questions {
         wg.Add(1)
         go func(i int, q string) {
