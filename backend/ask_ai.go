@@ -205,8 +205,8 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(answers)
 }
 
-func main() {
-    http.HandleFunc("/getAnswers", processQuestionsWithAI)
-    log.Fatal(http.ListenAndServe(":8080", nil))
-}
+// func main() {
+//     http.HandleFunc("/getAnswers", processQuestionsWithAI)
+//     log.Fatal(http.ListenAndServe(":8080", nil))
+// }
 
