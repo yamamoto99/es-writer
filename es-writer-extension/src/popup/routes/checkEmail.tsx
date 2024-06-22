@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 const checkEmail = () => {
-  const [username, setUsername] = useState("")
   const [verificationCode, setVerificationCode] = useState("")
   const navigate = useNavigate()
 
@@ -15,7 +14,7 @@ const checkEmail = () => {
 	    headers: {
 	  	"Content-Type": "application/json"
 	    },
-	    body: JSON.stringify({ username, verificationCode })
+	    body: JSON.stringify({ verificationCode })
 	  })
 
 	  if (response.ok) {
@@ -28,14 +27,12 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-    console.log("Resend Email form submitted")
-
 	  fetch("http://localhost:8080/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
 	    },
-	    body: JSON.stringify({ username, verificationCode })
+	    body: JSON.stringify({ verificationCode })
 	  }).then(response => {
       if (response.ok) {
         console.log("Check Email successful")
@@ -51,13 +48,6 @@ const checkEmail = () => {
     <>
     <form onSubmit={handleCheckEmail}>
       <h2>Check Email</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
       <input
         type="text"
         placeholder="VerificationCode"

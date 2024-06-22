@@ -1,10 +1,9 @@
 import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import openProfileForm from "./openProfileForm"
 
 const signIn = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const navigate = useNavigate()
 
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -20,8 +19,7 @@ const signIn = () => {
 
     if (response.ok) {
       console.log("SignIn successful")
-      //todo あとでどうにかします！！！！！！！！！
-      navigate("/profileForm")
+      openProfileForm()
     } else {
       console.error("Sign in failed")
       alert("Sign in failed")

@@ -6,24 +6,24 @@ const resendEmail = () => {
   const navigate = useNavigate()
 
   const handleResendEmail = async (event: React.FormEvent) => {
-	event.preventDefault()
-	console.log("Resend Email form submitted")
+	  event.preventDefault()
+	  console.log("Resend Email form submitted")
 
-	const response = await fetch("http://localhost:8080/checkEmail", {
-	  method: "POST",
-	  headers: {
-		"Content-Type": "application/json"
-	  },
-	  body: JSON.stringify({ verificationCode })
-	})
+	  const response = await fetch("http://localhost:8080/checkEmail", {
+	    method: "POST",
+	    headers: {
+	  	"Content-Type": "application/json"
+	    },
+	    body: JSON.stringify({ verificationCode })
+	  })
 
-	if (response.ok) {
-	  console.log("Check Email successful")
-	  navigate("/signin")
-	} else {
-	  console.error("Check Email failed")
-	  alert("Check Email failed")
-	}
+	  if (response.ok) {
+	    console.log("Check Email successful")
+	    navigate("/signin")
+	  } else {
+	    console.error("Check Email failed")
+	    alert("Check Email failed")
+	  }
   } 
 
   return (
