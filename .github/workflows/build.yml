@@ -30,7 +30,7 @@ jobs:
           git pull origin main
           rm -f /home/ec2-user/app/.env
           echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> /home/ec2-user/app/.env
-          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }} >> /home/ec2-user/app/.env
+          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> /home/ec2-user/app/.env
           echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> /home/ec2-user/app/.env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> /home/ec2-user/app/.env
           echo "DB_USER=${{ secrets.DB_USER }}" >> /home/ec2-user/app/.env
