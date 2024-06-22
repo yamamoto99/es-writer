@@ -40,6 +40,7 @@ jobs:
           git pull origin main
           
           # アプリケーションの起動
+          cd /home/ec2-user/app/backend
           docker build -t progate-app .
           docker stop progate-app || true
           docker rm progate-app || true
