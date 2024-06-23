@@ -2,14 +2,14 @@
 # RDS Parameter Group
 # ====================
 resource "aws_db_parameter_group" "progate-db-pg" {
-  name        = "progate-db-pg"
-  family      = "postgres16"
-  description = "Progate DB parameter group"
+	name        = "progate-db-pg"
+	family      = "postgres14"
+	description = "Progate DB parameter group"
 
-  parameter {
-    name  = "rds.force_ssl"
-    value = "0"
-  }
+	parameter {
+		name  = "rds.force_ssl"
+		value = "0"
+	}
 }
 
 # ====================
@@ -22,7 +22,7 @@ resource "aws_db_instance" "main" {
 	allocated_storage      = 20
 	storage_type           = "gp2"
 	engine                 = "postgres"
-	engine_version         = "16.3"
+	engine_version         = "14.12"
 	instance_class         = "db.t3.micro"
 	password               = "${var.rds_pass}"
 	username               = "${var.rds_username}"
