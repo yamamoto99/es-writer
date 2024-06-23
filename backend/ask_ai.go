@@ -171,6 +171,7 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 	profile, err := getUserProfile(userID)
 	if err != nil {
 		fmt.Println("error occuered!")
+		fmt.Println(profile)
 		http.Error(w, fmt.Sprintf("ユーザープロフィールの取得に失敗しました: %v", err), http.StatusInternalServerError)
 		return
 	}
