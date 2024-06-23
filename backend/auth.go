@@ -305,6 +305,9 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
+	fmt.Println(SignIn.Username)
+	fmt.Println(SignIn.Password)
+
 	// Cognitoにサインインリクエストを送信
 	authResp, err := svc.InitiateAuth(r.Context(), authInput)
 	if err != nil {
