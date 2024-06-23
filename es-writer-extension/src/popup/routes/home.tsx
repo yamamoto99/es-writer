@@ -6,23 +6,33 @@ import { useStorage } from "@plasmohq/storage/hook"
 import genAnswer from "./genAnswer";
 import openProfileForm from "./openProfileForm";
 
+async function fetchData() {
+  const [loginState, setLoginState] = useStorage<string>("loginState");
+  try {
+    const response = await fetch("http://localhost:8080/welcome", {
+      method: "GET"
+    });
+
+    if (response.ok) {
+      setLoginState("logged-in");
+    } else {
+      if (typeof loginState === "undefined" || loginState === "not-logged-in" || loginState === "logged-in") {
+        setLoginState("not-logged-in");
+      }
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+
 function IndexPopup() {
   const navigate = useNavigate();
 
   const [loginState, setLoginState] = useStorage<string>("loginState");
 
-  // /welcomeをたたいて、成功すれば、ログイン済みとして扱う
-  fetch("http://localhost:8080/welcome", {
-    method: "GET"
-  }).then((response) => {
-    if (response.ok) {
-      setLoginState("logged-in");
-    } else {
-      if (typeof loginState === undefined || loginState === "not-logged-in" || loginState === "logged-in"){
-        setLoginState("not-logged-in");
-      }
-    }
-  });
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   if (loginState === "not-logged-in") {
     return (

@@ -62,22 +62,22 @@ func main() {
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
-	if cognitoRegion == "" || clientId == "" || jwksURL == "" || region == "" || accessID == "" || secretAccessKey == "" || sessionToken == ""{
+	if cognitoRegion == "" || clientId == "" || jwksURL == "" || region == "" || accessID == "" || secretAccessKey == "" || sessionToken == "" {
 		log.Fatalf("環境変数が設定されていません:2")
 		fmt.Println(cognitoRegion, clientId, jwksURL, region, accessID, secretAccessKey, sessionToken)
 	}
-	db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
-	if err != nil {
-		fmt.Println("error in db connection")
-		log.Fatal(err)
-	}
-	defer db.Close()
-	// db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
+	// db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
 	// if err != nil {
 	// 	fmt.Println("error in db connection")
 	// 	log.Fatal(err)
 	// }
 	// defer db.Close()
+	db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
+	if err != nil {
+		fmt.Println("error in db connection")
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/signin", signin)
