@@ -44,3 +44,12 @@ Servers->登録->サーバー
 ユーザー名：postgres
 パスワード:postgres
 ```
+## EC2接続方法
+EC2に設定されたキーペアがある状態で
+```
+ssh -i <秘密鍵名> <ユーザー名>@<パブリックIP>
+```
+## EC2からRDSインスタンス内のDBにアクセスする
+```
+psql --host=<DBエンドポイント> --port=<portnum> --username=<username> --dbname<dbname>
+```
