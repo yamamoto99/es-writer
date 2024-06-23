@@ -254,7 +254,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		Value:    SignUp.Username,
 		Expires:  time.Now().Add(10 * time.Minute),
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	})
 
