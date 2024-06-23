@@ -8,7 +8,7 @@ const ProfileForm = () => {
   const handleProfileSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const response = await fetch("http://localhost:8080/saveProfile", {
+    const response = await fetch("http://localhost:8080/saveprofile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
