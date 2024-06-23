@@ -51,5 +51,5 @@ ssh -i <秘密鍵名> <ユーザー名>@<パブリックIP>
 ```
 ## EC2からRDSインスタンス内のDBにアクセスする
 ```
-psql --host=<DBエンドポイント> --port=<portnum> --username=<username> --dbname<dbname>
+psql -h=<DBエンドポイント>　--U=<username> -d<dbname>
 ```
