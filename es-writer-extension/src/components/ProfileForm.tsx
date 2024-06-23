@@ -48,7 +48,7 @@ const ProfileForm = () => {
     <form onSubmit={handleProfileSubmit} style={formStyle}>
       <h2>Profile Information</h2>
       <label style={labelStyle}>
-        Bio:
+        自己PR:
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -57,7 +57,7 @@ const ProfileForm = () => {
         />
       </label>
       <label style={labelStyle}>
-        Experience:
+        経験:
         <textarea
           value={experience}
           onChange={(e) => setExperience(e.target.value)}
@@ -66,7 +66,7 @@ const ProfileForm = () => {
         />
       </label>
       <label style={labelStyle}>
-        Projects:
+        今まで作った作品:
         <textarea
           value={projects}
           onChange={(e) => setProjects(e.target.value)}
