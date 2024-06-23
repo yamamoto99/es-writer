@@ -35,7 +35,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
-		log.Fatal(err)
+		return
 	}
 
 	fmt.Fprintf(w, "ID: %s, Name: %s, Email: %s, CreatedAt: %s\n", user.ID, user.Name, user.Email, user.CreatedAt)
