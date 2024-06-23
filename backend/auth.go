@@ -324,7 +324,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		Value:    *idToken,
 		Expires:  time.Now().Add(1 * time.Hour),
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	})
 	http.SetCookie(w, &http.Cookie{
@@ -332,7 +332,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		Value:    *accessToken,
 		Expires:  time.Now().Add(1 * time.Hour),
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	})
 	http.SetCookie(w, &http.Cookie{
@@ -340,7 +340,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		Value:    *refreshToken,
 		Expires:  time.Now().Add(24 * 7 * time.Hour),
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	})
 
