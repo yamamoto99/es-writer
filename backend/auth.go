@@ -321,6 +321,8 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	accessToken := authResp.AuthenticationResult.AccessToken
 	refreshToken := authResp.AuthenticationResult.RefreshToken
 
+	fmt.Println(idToken)
+
 	// トークンをクッキーに保存
 	http.SetCookie(w, &http.Cookie{
 		Name:     "idToken",
