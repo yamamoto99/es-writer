@@ -14,7 +14,7 @@ const signUp = () => {
     event.preventDefault()
     console.log("SignUp form submitted")
 
-    const response = await fetch("http://localhost:8080/signup", {
+    const response = await fetch("http://35.167.89.55/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

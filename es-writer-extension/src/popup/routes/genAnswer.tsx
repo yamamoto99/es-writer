@@ -13,7 +13,7 @@ function indexContents() {
           const html_source = result[0].result;
           console.log("html loaded");
 
-          fetch("http://localhost:8080/getAnswers", {
+          fetch("http://35.167.89.55/getAnswers", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"

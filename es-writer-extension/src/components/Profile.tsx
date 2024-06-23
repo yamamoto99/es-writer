@@ -9,7 +9,7 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch("http://localhost:8080/getProfile", {
+      const response = await fetch("http://35.167.89.55/getProfile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

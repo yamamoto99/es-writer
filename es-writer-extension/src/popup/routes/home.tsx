@@ -8,7 +8,7 @@ import openProfileForm from "./openProfileForm";
 
 async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
-    const response = await fetch("http://localhost:8080/welcome", {
+    const response = await fetch("http://35.167.89.55/welcome", {
       method: "GET"
     });
 

@@ -9,7 +9,7 @@ const checkEmail = () => {
 	  event.preventDefault()
 	  console.log("Check Email form submitted")
 
-	  const response = await fetch("http://localhost:8080/checkEmail", {
+	  const response = await fetch("http://35.167.89.55/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
@@ -27,7 +27,7 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch("http://localhost:8080/resendEmail", {
+	  fetch("http://35.167.89.55/resendEmail", {
 	    method: "POST",
 	  }).then(response => {
       if (response.ok) {

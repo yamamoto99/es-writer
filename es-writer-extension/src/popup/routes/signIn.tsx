@@ -15,7 +15,7 @@ const signIn = () => {
     event.preventDefault()
     console.log("SignIn form submitted")
 
-    const response = await fetch("http://localhost:8080/signin", {
+    const response = await fetch("http://35.167.89.55/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
