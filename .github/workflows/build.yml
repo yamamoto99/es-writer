@@ -37,6 +37,10 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/ec2-user/app/backend/.env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> /home/ec2-user/app/backend/.env
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/app/backend/.env
           
           # アプリケーションの起動
           cd /home/ec2-user/app/backend
