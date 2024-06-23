@@ -32,7 +32,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
 
 	var user User
-	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
+	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "test").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
 		return
