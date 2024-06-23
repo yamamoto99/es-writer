@@ -6,8 +6,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import genAnswer from "./genAnswer";
 import openProfileForm from "./openProfileForm";
 
-async function fetchData() {
-  const [loginState, setLoginState] = useStorage<string>("loginState");
+async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
     const response = await fetch("http://localhost:8080/welcome", {
       method: "GET"
@@ -31,7 +30,7 @@ function IndexPopup() {
   const [loginState, setLoginState] = useStorage<string>("loginState");
 
   useEffect(() => {
-    fetchData();
+    fetchData(loginState, setLoginState);
   }, []);
 
   if (loginState === "not-logged-in") {
