@@ -1,20 +1,22 @@
 package main
 
 import (
-    // "bytes"
-    "context"
-    "encoding/json"
-    "fmt"
-    "log"
-    "net/http"
-    "os"
-    "sync"
-    "time"
+	// "bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
-    "github.com/aws/aws-sdk-go-v2/aws"
-    "github.com/aws/aws-sdk-go-v2/config"
-    "github.com/aws/aws-sdk-go-v2/credentials"
-    "github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
+	// "os"
+	"sync"
+	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 )
 
 type HtmlRequest struct {
@@ -43,18 +45,22 @@ const modelId = "anthropic.claude-3-haiku-20240307-v1:0"
 
 func sendToAi(ctx context.Context, question string) (string, error) {
     // AWSの認証情報を取得
-    region := "us-west-2"
+	//TODO .envの環境変数から取得するように変更(完了)
+    // region := "us-west-2"
     cfg, err := config.LoadDefaultConfig(ctx,
         config.WithRegion(region),
         config.WithCredentialsProvider(
             credentials.NewStaticCredentialsProvider(
-                os.Getenv("AWS_ACCESS_KEY_ID"),
-                os.Getenv("AWS_SECRET_ACCESS_KEY"),
-                os.Getenv("AWS_SESSION_TOKEN"),
+                // os.Getenv("AWS_ACCESS_KEY_ID"),
+                // os.Getenv("AWS_SECRET_ACCESS_KEY"),
+                // os.Getenv("AWS_SESSION_TOKEN"),
+                accessID,
+                secretAccessKey,
+                sessionToken,
             ),
         ),
     )
-    // fmt.Println(os.Getenv("AWS_ACCESS_KEY_ID"),os.Getenv("AWS_SECRET_ACCESS_KEY"))
+    fmt.Println(os.Getenv("AWS_ACCESS_KEY_ID"),os.Getenv("AWS_SECRET_ACCESS_KEY"))
     
     if err != nil {
         return "", fmt.Errorf("failed to load AWS config: %w", err)
