@@ -44,7 +44,8 @@ func main() {
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
-	if cognitoRegion == "" || clientId == "" || jwksURL == "" {
+	apiKey = os.Getenv("GOOGLE_API_KEY")
+	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == "" {
 		log.Fatalf("congnitまたはgeminiの環境変数が設定されていません")
 		fmt.Println(cognitoRegion, clientId, jwksURL, apiKey)
 	}
