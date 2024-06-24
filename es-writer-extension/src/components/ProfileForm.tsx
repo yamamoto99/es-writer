@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { api_endpoint } from "../contents/index"
+
 const ProfileForm = () => {
   const [bio, setBio] = useState("");
   const [experience, setExperience] = useState("");
