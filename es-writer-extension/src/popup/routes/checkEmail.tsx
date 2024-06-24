@@ -1,6 +1,8 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { api_endpoint } from "../../contents/index"
+
 const checkEmail = () => {
   const [verificationCode, setVerificationCode] = useState("")
   const navigate = useNavigate()
@@ -9,7 +11,7 @@ const checkEmail = () => {
 	  event.preventDefault()
 	  console.log("Check Email form submitted")
 
-	  const response = await fetch("http://35.167.89.55/checkEmail", {
+	  const response = await fetch(api_endpoint + "/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
@@ -27,7 +29,7 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch("http://35.167.89.55/resendEmail", {
+	  fetch(api_endpoint + "/resendEmail", {
 	    method: "POST",
 	  }).then(response => {
       if (response.ok) {

@@ -3,6 +3,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import { useNavigate } from "react-router-dom"
 
 import openProfileForm from "./openProfileForm"
+import { api_endpoint } from "../../contents/index"
 
 const signIn = () => {
   const [username, setUsername] = useState("")
@@ -15,7 +16,7 @@ const signIn = () => {
     event.preventDefault()
     console.log("SignIn form submitted")
 
-    const response = await fetch("http://35.167.89.55/signin", {
+    const response = await fetch(api_endpoint + "/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

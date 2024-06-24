@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
 import { useNavigate } from "react-router-dom"
 
+import { api_endpoint } from "../../contents/index"
+
 const signUp = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -14,7 +16,7 @@ const signUp = () => {
     event.preventDefault()
     console.log("SignUp form submitted")
 
-    const response = await fetch("http://35.167.89.55/signup", {
+    const response = await fetch(api_endpoint + "/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
