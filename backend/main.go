@@ -23,16 +23,13 @@ var db *sql.DB
 var cognitoRegion string
 var clientId string
 var jwksURL string
-var region string
-var accessID string
-var secretAccessKey string
-var sessionToken string
+var apiKey string
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
 
 	var user User
-	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "test").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
+	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
 		return
@@ -53,31 +50,27 @@ func main() {
 	var dbPassword string = os.Getenv("DB_PASSWORD")
 	var dbName string = os.Getenv("DB_NAME")
 	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
-		log.Fatalf("環境変数が設定されていません:1")
+		log.Fatalf("データベースの環境変数が設定されていません")
 	}
-	region = os.Getenv("AWS_DEFAULT_REGION")
-	accessID = os.Getenv("AWS_ACCESS_KEY_ID")
-	secretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
-	sessionToken = os.Getenv("AWS_SESSION_TOKEN")
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
-	if cognitoRegion == "" || clientId == "" || jwksURL == "" || region == "" || accessID == "" || secretAccessKey == "" || sessionToken == "" {
-		log.Fatalf("環境変数が設定されていません:2")
-		fmt.Println(cognitoRegion, clientId, jwksURL, region, accessID, secretAccessKey, sessionToken)
+	if cognitoRegion == "" || clientId == "" || jwksURL == "" {
+		log.Fatalf("congnitまたはgeminiの環境変数が設定されていません")
+		fmt.Println(cognitoRegion, clientId, jwksURL, apiKey)
 	}
-	db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
-	if err != nil {
-		fmt.Println("error in db connection")
-		log.Fatal(err)
-	}
-	defer db.Close()
-	// db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
+	// db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
 	// if err != nil {
 	// 	fmt.Println("error in db connection")
 	// 	log.Fatal(err)
 	// }
 	// defer db.Close()
+	db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
+	if err != nil {
+		fmt.Println("error in db connection")
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/signin", signin)
