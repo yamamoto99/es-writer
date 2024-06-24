@@ -26,18 +26,6 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
-  
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    restart: always
-    depends_on:
-      - mariadb
-    environment:
-      PMA_HOST: mariadb
-      PMA_USER: root                    # phpMyAdminで使用するユーザー名
-      PMA_PASSWORD: rootpassword        # 上記ユーザーのパスワード
-    ports:
-      - "5050:80"                        # phpMyAdminにブラウザからアクセスするためのポート
 
 volumes:
   mariadb_data:
