@@ -8,7 +8,6 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 type User struct {
@@ -41,10 +40,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("server started...")
 	var err error
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
+
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
