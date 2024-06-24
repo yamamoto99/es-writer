@@ -8,7 +8,7 @@ const ProfileForm = () => {
   const handleProfileSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const response = await fetch("http://35.167.89.55/saveprofile", {
+    const response = await fetch(api_endpoint + "/saveprofile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

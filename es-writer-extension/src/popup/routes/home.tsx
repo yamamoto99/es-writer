@@ -5,10 +5,11 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import genAnswer from "./genAnswer";
 import openProfileForm from "./openProfileForm";
+import { api_endpoint } from "../../contents/index"
 
 async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
-    const response = await fetch("http://35.167.89.55/welcome", {
+    const response = await fetch(api_endpoint + "/welcome", {
       method: "GET"
     });
 

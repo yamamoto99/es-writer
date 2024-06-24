@@ -1,22 +1,15 @@
 package main
 
 import (
-	// "bytes"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"os"
-
-	// "os"
 	"sync"
 	"time"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 )
 
 type HtmlRequest struct {
@@ -35,6 +28,32 @@ type UserProfile struct {
 	Projects   string
 }
 
+// AIに送信するリクエストの構造体
+type AiRequest struct {
+	Contents []Content `json:"contents"`
+}
+
+// リクエスト内のコンテンツ部分
+type Content struct {
+	Parts []Part `json:"parts"`
+}
+
+// コンテンツ部分の中身の文章
+type Part struct {
+	Text string `json:"text"`
+}
+
+// AIからのレスポンスを受け取る
+type AiResponse struct {
+	Candidates []struct {
+		Content struct {
+			Parts []struct {
+				Text string `json:"text"`
+			} `json:"parts"`
+		} `json:"content"`
+	} `json:"candidates"`
+}
+
 // プロフィールを取得する関数
 func getUserProfile(userID string) (UserProfile, error) {
 	fmt.Println("getUserProfile" + userID)
@@ -46,90 +65,62 @@ func getUserProfile(userID string) (UserProfile, error) {
 	return profile, nil
 }
 
-type ClaudeRequest struct {
-	AnthropicVersion string    `json:"anthropic_version"`
-	Messages         []Message `json:"messages"`
-	MaxTokens        int       `json:"max_tokens"`
-	Temperature      float64   `json:"temperature,omitempty"`
-}
-
-type ClaudeResponse struct {
-	Content []struct {
-		Text string `json:"text"`
-	} `json:"content"`
-}
-
-const modelId = "anthropic.claude-3-haiku-20240307-v1:0"
-
 func sendToAi(ctx context.Context, question string) (string, error) {
-	// AWSの認証情報を取得
-	//TODO .envの環境変数から取得するように変更(完了)
-	// region := "us-west-2"
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithRegion(region),
-		config.WithCredentialsProvider(
-			credentials.NewStaticCredentialsProvider(
-				// os.Getenv("AWS_ACCESS_KEY_ID"),
-				// os.Getenv("AWS_SECRET_ACCESS_KEY"),
-				// os.Getenv("AWS_SESSION_TOKEN"),
-				accessID,
-				secretAccessKey,
-				sessionToken,
-			),
-		),
-	)
-	fmt.Println(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"))
-
-	if err != nil {
-		return "", fmt.Errorf("failed to load AWS config: %w", err)
-	}
-
-	// bedrockにリクエストを送るためのクライアント作成
-	client := bedrockruntime.NewFromConfig(cfg)
-
-	// メッセージの作成
-	content := "Human: " + question + "\n\nAssistant:"
-
-	messages := []Message{
-		{
-			Role:    "user",
-			Content: content,
+	// エンドポイントURLを設定
+	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=%s", apiKey)
+	// 質問を含むリクエストボディをJSON形式に変換
+	reqBody, err := json.Marshal(AiRequest{
+		Contents: []Content{
+			{
+				Parts: []Part{
+					{Text: question},
+				},
+			},
 		},
-	}
-
-	// リクエストボディを作成
-	reqBody, err := json.Marshal(ClaudeRequest{
-		Messages:         messages,
-		AnthropicVersion: "bedrock-2023-05-31",
-		MaxTokens:        1000,
-		Temperature:      0.2,
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal request body: %w", err)
+		return "", err
 	}
 
-	//　質問を投げかける
-	output, err := client.InvokeModel(context.TODO(), &bedrockruntime.InvokeModelInput{
-		ModelId:     aws.String(modelId),
-		ContentType: aws.String("application/json"),
-		Body:        reqBody,
-	})
-
+	// url先に質問(reqBody)を送るオブジェクト作成 ctx=リクエストのサイクルを制御する、タイムアウトやキャンセルなど
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return "", fmt.Errorf("failed to invoke model: %w", err)
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// httpクライアントの初期化
+	client := &http.Client{}
+	// httpリクエスト(req)を送信
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// レスポンスの中身の読み取り
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
 	}
 
-	// fmt.Printf("Response Body: %s\n", string(output.Body))
+	// 確認用
+	// fmt.Printf("HTTP Status: %d\n", resp.StatusCode)
+	// fmt.Printf("Response Body: %s\n", string(body))
 
-	// レスポンスをパース
-	var response ClaudeResponse
-	if err := json.Unmarshal(output.Body, &response); err != nil {
-		return "", fmt.Errorf("failed to unmarshal response: %w", err)
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("error: request %d: %s", resp.StatusCode, body)
 	}
 
-	// レスポンスを返す
-	if len(response.Content) > 0 {
-		return response.Content[0].Text, nil
+	// レスポンスをjson形式からAiREsponseの構造体の型に直す
+	var geminiResp AiResponse
+	if err := json.Unmarshal(body, &geminiResp); err != nil {
+		return "", err
+	}
+
+	// 中身がある(正しく返却された)時
+	if len(geminiResp.Candidates) > 0 && len(geminiResp.Candidates[0].Content.Parts) > 0 {
+		return geminiResp.Candidates[0].Content.Parts[0].Text, nil
 	}
 
 	return "", fmt.Errorf("no answer found")
