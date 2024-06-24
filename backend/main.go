@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
 type User struct {
@@ -29,7 +29,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
 
 	var user User
-	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
+	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = ?", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
 		return
@@ -45,13 +45,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-	var dbHost string = os.Getenv("DB_HOST")
-	var dbUser string = os.Getenv("DB_USER")
-	var dbPassword string = os.Getenv("DB_PASSWORD")
-	var dbName string = os.Getenv("DB_NAME")
-	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
-		log.Fatalf("データベースの環境変数が設定されていません")
-	}
 	cognitoRegion = os.Getenv("COGNITO_REGION")
 	clientId = os.Getenv("COGNITO_CLIENT_ID")
 	jwksURL = os.Getenv("TOKEN_KEY_URL")
@@ -59,13 +52,9 @@ func main() {
 		log.Fatalf("congnitまたはgeminiの環境変数が設定されていません")
 		fmt.Println(cognitoRegion, clientId, jwksURL, apiKey)
 	}
-	// db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
-	// if err != nil {
-	// 	fmt.Println("error in db connection")
-	// 	log.Fatal(err)
-	// }
-	// defer db.Close()
-	db, err = sql.Open("postgres", "host=db user=postgres password=postgres dbname=testdb sslmode=disable")
+
+	fmt.Println(os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOSTNAME"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
+	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOSTNAME"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE")))
 	if err != nil {
 		fmt.Println("error in db connection")
 		log.Fatal(err)

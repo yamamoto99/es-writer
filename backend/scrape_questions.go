@@ -3,15 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
-	"regexp"
-	// "fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"golang.org/x/net/html"
-
-	// "net/http"
-	// "os"
-	"strings"
 )
 
 // HTMLから質問を抽出し、AIに送信して質問かどうかを確認する関数
@@ -20,7 +16,7 @@ func filterQuestions(ctx context.Context, htmlContent string) ([]string, error) 
 	// fmt.Println("Body Content:", bodyContent)
 
 	//htmlを全てAIに投げて質問を出力してもらう。各質問の終わりに"\n"を入れてもらい、それで区切って質問を配列に入れる
-	questions, err := sendToAi(ctx, "以下のHTMLを解析し、textareaのある質問文のみを抽出し、質問文のみを出力してください。出力する際は全ての質問を一つに繋いでください。そして、それぞれの質問文の間には#*#を入れてください。" + bodyContent)
+	questions, err := sendToAi(ctx, "以下のHTMLを解析し、textareaのある質問文のみを抽出し、質問文のみを出力してください。出力する際は全ての質問を一つに繋いでください。そして、それぞれの質問文の間には#*#を入れてください。"+bodyContent)
 	// fmt.Println("Questions:", questions)
 	if err != nil {
 		log.Fatalf("Error sending to AI: %v", err)
@@ -32,7 +28,6 @@ func filterQuestions(ctx context.Context, htmlContent string) ([]string, error) 
 	// }
 	return questionArray, nil
 }
-
 
 // HTMLからbodyタグの中身を抽出する関数
 func extractBodyContent(htmlContent string) string {
