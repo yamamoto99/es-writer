@@ -8,11 +8,11 @@ WORKDIR /app
 ENV GO111MODULE=on
 
 # 必要なGoのパッケージをダウンロード
-COPY go.mod go.sum ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 # ソースコードをコピー
-COPY . .
+COPY backend/ ./
 
 # APIサーバーをビルド
 RUN go build -o main .
