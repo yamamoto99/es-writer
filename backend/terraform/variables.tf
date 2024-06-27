@@ -10,6 +10,10 @@ variable "aws_region" {
 	description = "AWS Region"
 }
 
+variable "iam_username" {
+	description = "IAM username"
+}
+
 variable "rds_pass" {
 	description = "RDS instance password"
 }
