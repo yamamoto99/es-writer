@@ -1,14 +1,7 @@
-#### 注意
-
-これは2024/6/22,23に開催された "Progateハッカソン powered by AWS" で作成したものです。当日はクレジットが付与されていたためAWSでデプロイしていましたが、ハッカソン後にも維持できるように変更が加わっています。変更点は以下の通りです。
-- 現在はAWSではなく他のサービスのPaaS基盤でデプロイしています
-- 上記の都合に伴い、DBをPostgreSQLからMariaDBに変更しています
-
-
-#### 今後について
-
-フロントエンドはchrome拡張機能として開発し、現在審査待ちです。審査が通り次第拡張機能のページを追記します。
-
+>[!NOTE]
+>これは2024/6/22,23に開催された "Progateハッカソン powered by AWS" で作成したものです。当日はクレジットが付与されていたためAWSでデプロイしていましたが、ハッカソン後にも維持できるように変更が加わっています。変更点は以下の通りです。
+>- 現在はAWSではなく他のサービスのPaaS基盤でデプロイしています
+>- 上記の都合に伴い、DBをPostgreSQLからMariaDBに変更しています
 
 # ES-Writer
 ## 概要
@@ -22,7 +15,7 @@ Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 ### Front
 [![My Skills](https://skillicons.dev/icons?i=html,css,js,ts,react,plasmo)](https://skillicons.dev)
 ### Back
-[![My Skills](https://skillicons.dev/icons?i=go)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=go,postgresql)](https://skillicons.dev)
 ### AWS
 <img src="https://github.com/yamamoto99/es-writer/assets/111506108/09fad974-f683-481b-b8df-22a5f2568060" alt="Cognito" style="width:50px;">
 <img src="https://github.com/yamamoto99/es-writer/assets/111506108/51707ead-e210-4b7f-94a5-5576cafe5370" alt="EC2" style="width:50px;">
@@ -36,4 +29,7 @@ Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 
 ### Other
 [![My Skills](https://skillicons.dev/icons?i=git,github,githubactions,docker,terraform)](https://skillicons.dev)
+
+## 拡張機能
+現在はChromeのみ対応しています。拡張機能のページは[こちら](https://chromewebstore.google.com/detail/es-writer-extension/mlccgjdhbcdhcbjknehhkmlnccejmhpm)
 
