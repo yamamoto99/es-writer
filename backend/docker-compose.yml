@@ -4,28 +4,39 @@ services:
     ports:
       - 8080:8080
     environment:
-      DB_HOSTNAME: mariadb
-      DB_PORT: 3306
-      DB_DATABASE: testdb
-      DB_USERNAME: user
-      DB_PASSWORD: password
+      COGNITO_REGION: ${COGNITO_REGION}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
+      TOKEN_KEY_URL: ${TOKEN_KEY_URL}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      NS_MARIADB_USER: ${NS_MARIADB_USER}
+      NS_MARIADB_PASSWORD: ${NS_MARIADB_PASSWORD}
+      NS_MARIADB_HOSTNAME: ${NS_MARIADB_HOSTNAME}
+      NS_MARIADB_PORT: ${NS_MARIADB_PORT}
+      NS_MARIADB_DATABASE: ${NS_MARIADB_DATABASE}
     depends_on:
       - mariadb
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword  # ここにrootユーザーのパスワードを設定
-      MYSQL_DATABASE: testdb        # 作成したいデータベース名
-      MYSQL_USER: user            # データベースユーザー名
-      MYSQL_PASSWORD: password       # データベースユーザーのパスワード
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
       - 3306:3306
     volumes:
-      - mariadb_data:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
-
-volumes:
-  mariadb_data:
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    ports:
+      - 5050:80
+    depends_on:
+      - mariadb

@@ -47,11 +47,18 @@ func main() {
 	apiKey = os.Getenv("GOOGLE_API_KEY")
 	if cognitoRegion == "" || clientId == "" || jwksURL == "" || apiKey == "" {
 		log.Fatalf("congnitまたはgeminiの環境変数が設定されていません")
-		fmt.Println(cognitoRegion, clientId, jwksURL, apiKey)
 	}
 
-	fmt.Println("db inf: " + os.Getenv("NS_MARIADB_PORT"))
-	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", os.Getenv("NS_MARIADB_USER"), os.Getenv("NS_MARIADB_PASSWORD"), os.Getenv("NS_MARIADB_HOSTNAME"), os.Getenv("NS_MARIADB_PORT"), os.Getenv("NS_MARIADB_DATABASE")))
+	ns_mariadb_user := os.Getenv("NS_MARIADB_USER")
+	ns_mariadb_password := os.Getenv("NS_MARIADB_PASSWORD")
+	ns_mariadb_port := os.Getenv("NS_MARIADB_PORT")
+	ns_mariadb_hostname := os.Getenv("NS_MARIADB_HOSTNAME")
+	ns_mariadb_database := os.Getenv("NS_MARIADB_DATABASE")
+	if ns_mariadb_user == "" || ns_mariadb_password == "" || ns_mariadb_port == "" || ns_mariadb_hostname == "" || ns_mariadb_database == "" {
+		log.Fatalf("mariadbの環境変数が設定されていません")
+	}
+
+	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", ns_mariadb_user, ns_mariadb_password, ns_mariadb_hostname, ns_mariadb_port, ns_mariadb_database))
 	if err != nil {
 		fmt.Println("error in db connection")
 		log.Fatal(err)
