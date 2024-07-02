@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react"
 
+import { api_endpoint } from "../contents/index"
+
 const Profile = () => {
   const [profile, setProfile] = useState({
     bio: "",
