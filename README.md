@@ -13,7 +13,7 @@
 Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 ## 技術スタック
 ### Front
-[![My Skills](https://skillicons.dev/icons?i=html,css,js,ts,react,plasmo)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=html,css,tailwindcss,js,ts,react)](https://skillicons.dev)
 ### Back
 [![My Skills](https://skillicons.dev/icons?i=go,postgresql)](https://skillicons.dev)
 ### AWS
