@@ -6,6 +6,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import genAnswer from "./genAnswer";
 import openProfileForm from "./openProfileForm";
 import { api_endpoint } from "../../contents/index"
+import "../../../style.css";
 
 async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
@@ -36,16 +37,24 @@ function IndexPopup() {
 
   if (loginState === "not-logged-in") {
     return (
-      <div style={{ width: '150px', height: '75px' }}>
-        <button onClick={() => {setLoginState("signUp");navigate("/signUp")}}>サインアップ</button>
-        <button onClick={() => {setLoginState("signIn");navigate("/signIn")}}>サインイン</button>
+      <div className="w-40 h-20">
+        <button 
+        className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-4 mb-1"
+        onClick={() => {setLoginState("signUp");navigate("/signUp")}}>サインアップ</button>
+        <button
+        className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-4"
+        onClick={() => {setLoginState("signIn");navigate("/signIn")}}>サインイン</button>
       </div>
     );
   } else if (loginState === "logged-in") {
     return (
-      <div style={{ width: '150px', height: '75px' }}>
-        <button onClick={genAnswer}>回答生成</button>
-        <button onClick={openProfileForm}>経歴入力</button>
+      <div className="w-40 h-20">
+        <button
+        className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-4 mb-1"
+        onClick={genAnswer}>回答生成</button>
+        <button
+        className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-4"
+        onClick={openProfileForm}>経歴入力</button>
       </div>
     );
   }else if (loginState === "signUp") {
