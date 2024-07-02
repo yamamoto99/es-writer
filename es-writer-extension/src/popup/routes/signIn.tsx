@@ -35,15 +35,14 @@ const signIn = () => {
   }
 
   return (
-    <>
-    <form onSubmit={handleSignIn}>
-      <h2>Sign In</h2>
+    <form onSubmit={handleSignIn} className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
       <input
         type="password"
@@ -51,11 +50,21 @@ const signIn = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
-      <button type="submit">Sign In</button>
+      <div className="flex justify-center space-x-4">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white rounded-md px-3.5 py-2 hover:bg-blue-700"
+        >
+          Sign In</button>
+        <button
+          onClick={() => {setLoginState("not-logged-in");navigate("/")}}
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
+        >
+          Back</button>
+      </div>
     </form>
-    <button onClick={() => {setLoginState("not-logged-in");navigate("/")}}>Back</button>
-    </>
   )
 }
 

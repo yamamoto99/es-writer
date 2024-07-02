@@ -63,7 +63,7 @@ const signUp = () => {
       <div className="flex justify-center space-x-4">
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded-md px-3.5 py-2"
+          className="bg-blue-500 text-white rounded-md px-3.5 py-2 hover:bg-blue-700"
         >
           Sign Up
         </button>
@@ -72,7 +72,7 @@ const signUp = () => {
           setLoginState("not-logged-in");
           navigate("/");
           }}
-          className="bg-gray-500 text-white rounded-md px-3 py-2"
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
         >
           Back
         </button>
