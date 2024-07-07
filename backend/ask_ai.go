@@ -146,7 +146,7 @@ func processQuestionsWithAI(w http.ResponseWriter, r *http.Request) {
 
 	// OPTIONSリクエストに対する処理
 	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
