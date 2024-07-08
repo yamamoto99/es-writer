@@ -38,6 +38,11 @@
     "permissions": [
       "activeTab",
       "scripting"
-    ]
+    ],
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "{70b636e9-caeb-fd9f-7e9f-405d02dce9a0}"
+      }
+    }
   }
 }
