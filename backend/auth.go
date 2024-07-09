@@ -338,7 +338,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refreshToken",
 		Value:    *refreshToken,
-		Expires:  time.Now().Add(60 * 24 * 7 * time.Hour),
+		Expires:  time.Now().Add(24 * 60 * time.Hour),
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
