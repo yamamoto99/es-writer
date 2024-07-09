@@ -122,6 +122,10 @@ paths:
       responses:
         '200':
           description: Welcome page accessed
+        '401':
+          description: Couldn't find refresh token
+        '500':
+          description: Unable to load SDK config or Failed to refresh session
       security:
         - idToken: []
         - accessToken: []
