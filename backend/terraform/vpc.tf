@@ -118,7 +118,21 @@ resource "aws_security_group" "es-writer-admin-sg" {
 		from_port   = 22
 		to_port     = 22
 		protocol    = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]  # セキュリティ上、特定のIPアドレス範囲に制限することを推奨します
+		cidr_blocks = ["0.0.0.0/0"]
+	}
+
+	egress {
+		from_port   = 443
+		to_port     = 443
+		protocol    = "tcp"
+		cidr_blocks = ["0.0.0.0/0"]
+	}
+
+	egress {
+		from_port   = 80
+		to_port     = 80
+		protocol    = "tcp"
+		cidr_blocks = ["0.0.0.0/0"]
 	}
 }
 
@@ -135,8 +149,8 @@ resource "aws_security_group_rule" "web_to_app" {
 # アプリケーションサーバーがWEBサーバーからのアクセスを受け入れるルール
 resource "aws_security_group_rule" "app_from_web" {
 	type                     = "ingress"
-	from_port                = 80
-	to_port                  = 80
+	from_port                = 8080
+	to_port                  = 8080
 	protocol                 = "tcp"
 	security_group_id        = aws_security_group.es-writer-app-sg.id
 	source_security_group_id = aws_security_group.es-writer-web-sg.id
