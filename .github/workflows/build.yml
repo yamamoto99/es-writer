@@ -1,0 +1,53 @@
+name: deploy
+run-name: EC2へのデプロイ 🚀
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v3
+
+      - name: AWS CLIのインストール
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_2 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_2 }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Add SSH key
+        run: echo "${{ secrets.EC2_SSH_KEY }}" > progate.pem && chmod 600 progate.pem
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no -i progate.pem  ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          
+          # アプリケーションのデプロイ
+          cd /home/ec2-user/app
+          git pull origin main
+          rm -f /home/ec2-user/app/backend/.env
+          echo "COGNITO_REGION=${{ secrets.COGNITO_REGION }}" >> /home/ec2-user/app/backend/.env
+          echo "COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}" >> /home/ec2-user/app/backend/.env
+          echo "TOKEN_KEY_URL=${{ secrets.TOKEN_KEY_URL }}" >> /home/ec2-user/app/backend/.env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> /home/ec2-user/app/backend/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> /home/ec2-user/app/backend/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/ec2-user/app/backend/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> /home/ec2-user/app/backend/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> /home/ec2-user/app/backend/.env
+          echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> /home/ec2-user/app/backend/.env
+          
+          # アプリケーションの起動
+          cd /home/ec2-user/app/backend
+          docker stop progate-app || true
+          docker rm progate-app || true
+          docker image prune -f
+          docker build -t progate-app .
+          docker run -d --name progate-app -p 80:8080 progate-app
+          docker system prune -a -f
+          EOF
