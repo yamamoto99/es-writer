@@ -1,42 +1,35 @@
 services:
-  api:
-    build: .
-    ports:
-      - 8080:8080
-    environment:
-      COGNITO_REGION: ${COGNITO_REGION}
-      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
-      TOKEN_KEY_URL: ${TOKEN_KEY_URL}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      NS_MARIADB_USER: ${NS_MARIADB_USER}
-      NS_MARIADB_PASSWORD: ${NS_MARIADB_PASSWORD}
-      NS_MARIADB_HOSTNAME: ${NS_MARIADB_HOSTNAME}
-      NS_MARIADB_PORT: ${NS_MARIADB_PORT}
-      NS_MARIADB_DATABASE: ${NS_MARIADB_DATABASE}
-    depends_on:
-      - mariadb
-
-  mariadb:
-    image: mariadb:latest
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    ports:
-      - 3306:3306
+  terraform:
+    image: hashicorp/terraform:1.9
+    working_dir: /terraform
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
-  
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    environment:
-      PMA_HOST: mariadb
-      PMA_PORT: 3306
-    ports:
-      - 5050:80
-    depends_on:
-      - mariadb
+      - ./terraform:/terraform
+    entrypoint: ["sh", "-c", "terraform init -upgrade && terraform apply -var-file=terraform.tfvars -auto-approve"]
+#   api:
+#     # GitHubActionsで自動生成したimage、buildをコメントアウトで動作
+#     # image: ghcr.io/yamamoto99/es-writer:main
+#     build: .
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - db
+#   db:
+#     image: postgres:13
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: testdb
+#     volumes:
+#       - db_data:/var/lib/postgresql/data
+#       - ./sql:/docker-entrypoint-initdb.d
+#   phppgadmin:
+#     image: dpage/pgadmin4
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+#       PGADMIN_DEFAULT_PASSWORD: admin
+#     ports:
+#       - "5050:80"
+#     depends_on:
+#       - db
+# volumes:
+#   db_data:

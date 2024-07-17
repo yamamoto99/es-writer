@@ -15,7 +15,9 @@ Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 ### Front
 [![My Skills](https://skillicons.dev/icons?i=html,css,tailwindcss,js,ts,react)](https://skillicons.dev)
 ### Back
-[![My Skills](https://skillicons.dev/icons?i=go,postgresql)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=go)](https://skillicons.dev)
+### DB
+[![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev)
 ### AWS
 <img src="https://github.com/yamamoto99/es-writer/assets/111506108/09fad974-f683-481b-b8df-22a5f2568060" alt="Cognito" style="width:50px;">
 <img src="https://github.com/yamamoto99/es-writer/assets/111506108/51707ead-e210-4b7f-94a5-5576cafe5370" alt="EC2" style="width:50px;">
