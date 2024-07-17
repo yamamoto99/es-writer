@@ -161,3 +161,37 @@ resource "aws_security_group_rule" "es-writer-egress-ec2" {
 	security_group_id        = aws_security_group.es-writer-app-sg.id
 	source_security_group_id = aws_security_group.es-writer-db-sg.id
 }
+
+# ====================
+# Internet Gateway
+# ====================
+resource "aws_internet_gateway" "es-writer-igw" {
+	vpc_id = aws_vpc.es-writer.id
+	tags = {
+		Name = "es-writer-igw"
+	}
+}
+
+# ====================
+# Route Table
+# ====================
+# パブリックルートテーブル
+resource "aws_route_table" "public_app_rt" {
+	vpc_id = aws_vpc.es-writer.id
+	tags = {
+		Name = "public-app-rt"
+	}
+}
+
+# インターネットゲートウェイへのルート
+resource "aws_route" "public_route" {
+	gateway_id             = aws_internet_gateway.es-writer-igw.id
+	route_table_id         = aws_route_table.public_app_rt.id
+	destination_cidr_block = "0.0.0.0/0"
+}
+
+# ルートテーブルとサブネットを関連付け
+resource "aws_route_table_association" "public_app_rt_assoc_1" {
+	subnet_id      = aws_subnet.public_app_1.id
+	route_table_id = aws_route_table.public_app_rt.id
+}
