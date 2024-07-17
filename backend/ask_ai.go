@@ -58,7 +58,7 @@ type AiResponse struct {
 func getUserProfile(userID string) (UserProfile, error) {
 	fmt.Println("getUserProfile" + userID)
 	var profile UserProfile
-	err := db.QueryRow("SELECT bio, experience, projects FROM users WHERE id=?", userID).Scan(&profile.Bio, &profile.Experience, &profile.Projects)
+	err := db.QueryRow("SELECT bio, experience, projects FROM users WHERE id=$1", userID).Scan(&profile.Bio, &profile.Experience, &profile.Projects)
 	if err != nil {
 		return profile, fmt.Errorf("プロフィールの取得に失敗しました: %v", err)
 	}

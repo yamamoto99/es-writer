@@ -34,7 +34,7 @@ func saveProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stmt, err := db.Prepare("UPDATE users SET bio=?, experience=?, projects=? WHERE id=?")
+	stmt, err := db.Prepare("UPDATE users SET bio=$1, experience=$2, projects=$3 WHERE id=$4")
 	if err != nil {
 		log.Println("Database prepare statement error:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)

@@ -1,8 +1,3 @@
->[!NOTE]
->これは2024/6/22,23に開催された "Progateハッカソン powered by AWS" で作成したものです。当日はクレジットが付与されていたためAWSでデプロイしていましたが、ハッカソン後にも維持できるように変更が加わっています。変更点は以下の通りです。
->- 現在はAWSではなく他のサービスのPaaS基盤でデプロイしています
->- 上記の都合に伴い、DBをPostgreSQLからMariaDBに変更しています
-
 # ES-Writer
 ## 概要
 <h4>自身の経歴をあらかじめ入力しておくことにより、自身の経歴からAIでESの回答を生成することができます</h4>
@@ -31,7 +26,4 @@ Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 
 ### Other
 [![My Skills](https://skillicons.dev/icons?i=git,github,githubactions,docker,terraform)](https://skillicons.dev)
-
-## 拡張機能
-現在はChromeのみ対応しています。拡張機能のページは[こちら](https://chromewebstore.google.com/detail/es-writer-extension/mlccgjdhbcdhcbjknehhkmlnccejmhpm)
 

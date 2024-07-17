@@ -28,7 +28,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("handler called...")
 
 	var user User
-	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = ?", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
+	err := db.QueryRow("SELECT id, username, email, created_at FROM users WHERE username = $1", "testuser").Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt)
 	if err != nil {
 		fmt.Printf("error in query: %s", err)
 		return
@@ -49,16 +49,15 @@ func main() {
 		log.Fatalf("congnitまたはgeminiの環境変数が設定されていません")
 	}
 
-	ns_mariadb_user := os.Getenv("NS_MARIADB_USER")
-	ns_mariadb_password := os.Getenv("NS_MARIADB_PASSWORD")
-	ns_mariadb_port := os.Getenv("NS_MARIADB_PORT")
-	ns_mariadb_hostname := os.Getenv("NS_MARIADB_HOSTNAME")
-	ns_mariadb_database := os.Getenv("NS_MARIADB_DATABASE")
-	if ns_mariadb_user == "" || ns_mariadb_password == "" || ns_mariadb_port == "" || ns_mariadb_hostname == "" || ns_mariadb_database == "" {
-		log.Fatalf("mariadbの環境変数が設定されていません")
+	var dbHost string = os.Getenv("DB_HOST")
+	var dbUser string = os.Getenv("DB_USER")
+	var dbPassword string = os.Getenv("DB_PASSWORD")
+	var dbName string = os.Getenv("DB_NAME")
+	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
+		log.Fatalf("環境変数が設定されていません:1")
 	}
 
-	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", ns_mariadb_user, ns_mariadb_password, ns_mariadb_hostname, ns_mariadb_port, ns_mariadb_database))
+	db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
 	if err != nil {
 		fmt.Println("error in db connection")
 		log.Fatal(err)
