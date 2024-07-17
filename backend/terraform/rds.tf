@@ -24,11 +24,11 @@ resource "aws_db_instance" "main" {
 	engine                 = "postgres"
 	engine_version         = "14.12"
 	instance_class         = "db.t3.micro"
-	password               = "${var.rds_pass}"
-	username               = "${var.rds_username}"
-	db_subnet_group_name   = "${aws_db_subnet_group.es-writer-db-subnet.name}"
-	vpc_security_group_ids = ["${aws_security_group.es-writer-db-sg.id}"]
-	parameter_group_name   = "${aws_db_parameter_group.es-writer-db-pg.name}"
+	password               = var.rds_pass
+	username               = var.rds_username
+	db_subnet_group_name   = aws_db_subnet_group.es-writer-db-subnet.name
+	vpc_security_group_ids = [aws_security_group.es-writer-db-sg.id]
+	parameter_group_name   = aws_db_parameter_group.es-writer-db-pg.name
 	skip_final_snapshot    = true
 	multi_az               = false
 	availability_zone      = var.availability_zone_1
@@ -44,7 +44,7 @@ resource "aws_db_instance" "main" {
 resource "aws_db_subnet_group" "es-writer-db-subnet" {
 	name        = "es-writer-db-subnet"
 	description = "es-writer-db-subnet"
-	subnet_ids  =["${aws_subnet.private_db_1.id}","${aws_subnet.private_db_2.id}"]
+	subnet_ids  = [aws_subnet.private_db_1.id, aws_subnet.private_db_2.id]
 	tags = {
 		Name = "es-writer-db-subnet"
 	}
