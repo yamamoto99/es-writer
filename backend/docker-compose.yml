@@ -28,7 +28,6 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: testdb
     volumes:
-      - db_data:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d
   phppgadmin:
     image: dpage/pgadmin4
@@ -39,5 +38,3 @@ services:
       - "5050:80"
     depends_on:
       - db
-volumes:
-  db_data:
