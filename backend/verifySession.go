@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
 )
 
-func welcome(w http.ResponseWriter, r *http.Request) {
+func verifySession(w http.ResponseWriter, r *http.Request) {
 	// トークンを検証
 	fmt.Println("welcome page called...")
 

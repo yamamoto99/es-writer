@@ -116,7 +116,7 @@ paths:
       security:
         - username: []
 
-  /welcome:
+  /verifySession:
     get:
       summary: Welcome page
       responses:

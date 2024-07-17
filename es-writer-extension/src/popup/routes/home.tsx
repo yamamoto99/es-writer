@@ -10,7 +10,7 @@ import "../../../style.css";
 
 async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
-    const response = await fetch(api_endpoint + "/welcome", {
+    const response = await fetch(api_endpoint + "/verifySession", {
       method: "GET"
     });
 
