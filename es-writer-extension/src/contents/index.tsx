@@ -4,4 +4,4 @@ export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
 }
 
-export const api_endpoint = "https://ex-writer.trap.show"
+export const api_endpoint = "http://localhost:8080"
