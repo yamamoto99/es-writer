@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { useStorage } from "@plasmohq/storage/hook"
 import { useNavigate } from "react-router-dom"
 
+import { api_endpoint } from "../../contents/index"
+
 const signUp = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -14,7 +16,7 @@ const signUp = () => {
     event.preventDefault()
     console.log("SignUp form submitted")
 
-    const response = await fetch("http://35.167.89.55/signup", {
+    const response = await fetch(api_endpoint + "/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -33,15 +35,14 @@ const signUp = () => {
   }
 
   return (
-    <>
-    <form onSubmit={handleSignUp}>
-      <h2>Sign Up</h2>
+    <form onSubmit={handleSignUp} className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
       <input
         type="password"
@@ -49,6 +50,7 @@ const signUp = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
       <input
         type="email"
@@ -56,11 +58,26 @@ const signUp = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
-      <button type="submit">Sign Up</button>
+      <div className="flex justify-center space-x-4">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white rounded-md px-3.5 py-2 hover:bg-blue-700"
+        >
+          Sign Up
+        </button>
+        <button
+          onClick={() => {
+          setLoginState("not-logged-in");
+          navigate("/");
+          }}
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
+        >
+          Back
+        </button>
+      </div>
     </form>
-    <button onClick={() => {setLoginState("not-logged-in");navigate("/")}}>Back</button>
-    </>
   )
 }
 

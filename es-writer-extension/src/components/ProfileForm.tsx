@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+import "../../style.css";
+
+import { api_endpoint } from "../contents/index"
+
 const ProfileForm = () => {
   const [bio, setBio] = useState("");
   const [experience, setExperience] = useState("");
@@ -8,7 +12,7 @@ const ProfileForm = () => {
   const handleProfileSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const response = await fetch("http://35.167.89.55/saveprofile", {
+    const response = await fetch(api_endpoint + "/saveprofile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -23,58 +27,43 @@ const ProfileForm = () => {
     }
   };
 
-  const formStyle = {
-    maxWidth: "600px",
-    margin: "0 auto"
-  };
-
-  const labelStyle = {
-    display: "block",
-    marginBottom: "10px"
-  };
-
-  const textareaStyle = {
-    width: "100%",
-    height: "100px",
-    marginBottom: "20px",
-  };
-
-  const buttonStyle = {
-    display: "block",
-    margin: "0 auto",
-  };
-
   return (
-    <form onSubmit={handleProfileSubmit} style={formStyle}>
-      <h2>Profile Information</h2>
-      <label style={labelStyle}>
-        自己PR:
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          required
-          style={textareaStyle}
-        />
-      </label>
-      <label style={labelStyle}>
-        経験:
-        <textarea
-          value={experience}
-          onChange={(e) => setExperience(e.target.value)}
-          required
-          style={textareaStyle}
-        />
-      </label>
-      <label style={labelStyle}>
-        今まで作った作品:
-        <textarea
-          value={projects}
-          onChange={(e) => setProjects(e.target.value)}
-          required
-          style={textareaStyle}
-        />
-      </label>
-      <button type="submit" style={buttonStyle}>Save Profile</button>
+    <form onSubmit={handleProfileSubmit} className="max-w-lg mx-auto">
+      <h2 className="text-xl font-bold mb-4">Profile Information</h2>
+      <div className="mb-4">
+        <label className="block mb-2">
+          自己PR:
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            required
+            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
+          />
+        </label>
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">
+          経験:
+          <textarea
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            required
+            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
+          />
+        </label>
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">
+          今まで作った作品:
+          <textarea
+            value={projects}
+            onChange={(e) => setProjects(e.target.value)}
+            required
+            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
+          />
+        </label>
+      </div>
+      <button type="submit" className="block mx-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Save Profile</button>
     </form>
   );
 };

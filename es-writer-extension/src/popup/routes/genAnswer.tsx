@@ -1,5 +1,7 @@
 /// <reference types="chrome"/>
 
+import { api_endpoint } from "../../contents/index"
+
 function indexContents() {
   console.log("indexContents called");  // 関数呼び出しの確認用ログ
 
@@ -13,7 +15,7 @@ function indexContents() {
           const html_source = result[0].result;
           console.log("html loaded");
 
-          fetch("http://35.167.89.55/getAnswers", {
+          fetch(api_endpoint + "/getAnswers", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
