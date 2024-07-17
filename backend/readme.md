@@ -25,25 +25,18 @@ PostgreSQLに接続する。ユーザー名はpostgresで、データベース�
 ```shell
 psql -U postgres -d testdb
 ```
-## pgAdminからDBを操作する
+## phpmyadminからDBを操作する
 localhost5050にアクセス
 ```shell
 http://localhost:5050
 ```
 下記でログイン
 ```
-Email Address/Username:pgadmin4@pgadmin.org
-Password:admin
+user: user
+Password: password
 ```
-DBに接続する
-```
-Servers->登録->サーバー
-名前:自由
-ホスト名/アドレス:db
-管理者用データベース:postgres
-ユーザー名：postgres
-パスワード:postgres
-```
+>[!CAUTION]
+>現在はEC2にデプロイしていないです
 ## EC2接続方法
 EC2に設定されたキーペアがある状態で
 ```

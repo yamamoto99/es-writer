@@ -305,9 +305,6 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	fmt.Println(SignIn.Username)
-	fmt.Println(SignIn.Password)
-
 	// Cognitoにサインインリクエストを送信
 	authResp, err := svc.InitiateAuth(r.Context(), authInput)
 	if err != nil {
@@ -320,8 +317,6 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	idToken := authResp.AuthenticationResult.IdToken
 	accessToken := authResp.AuthenticationResult.AccessToken
 	refreshToken := authResp.AuthenticationResult.RefreshToken
-
-	fmt.Println(idToken)
 
 	// トークンをクッキーに保存
 	http.SetCookie(w, &http.Cookie{
@@ -343,7 +338,7 @@ func signin(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refreshToken",
 		Value:    *refreshToken,
-		Expires:  time.Now().Add(24 * 7 * time.Hour),
+		Expires:  time.Now().Add(24 * 60 * time.Hour),
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,

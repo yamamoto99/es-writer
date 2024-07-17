@@ -12,7 +12,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # ソースコードをコピー
-COPY . .
+COPY ./ ./
 
 # APIサーバーをビルド
 RUN go build -o main .

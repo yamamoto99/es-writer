@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: es-writer API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Root endpoint
+      responses:
+        '200':
+          description: OK
+
+  /signup:
+    post:
+      summary: User signup
+      description: Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: test
+                password:
+                  type: string
+                  example: aA1!abcd
+                email:
+                  type: string
+                  example: test@example.com
+      responses:
+        '201':
+          description: User created
+          headers:
+            Set-Cookie:
+              description: Set username
+              schema:
+                type: string
+        '405':
+          description: Request method isn't POST
+        '400':
+          description: Invalid request payload or Missing required fields
+        '500':
+          description: Internal server error
+
+  
+  /signin:
+    post:
+      summary: User signin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User signed in
+          headers:
+            Set-Cookie:
+              description: Set cookies for idToken, accessToken and refreshToken
+              schema:
+                type: string
+        '405':
+          description: Request method isn't POST
+        '400':
+          description: Invalid request payload
+        '500':
+          description: Couldn't load cognito config
+        '401':
+          description: Invalid username or password
+
+  /checkEmail:
+    post:
+      summary: Check if email address is valid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                verificationCode:
+                  type: string  
+      responses:
+        '200':
+          description: Email verified
+        '405':
+          description: Request method isn't POST
+        '400':
+          description: Invalid request payload or Missing required fields
+        '500':
+          description: Couldn't load cognito config or Couldn't verify email
+      security:
+        - username: []
+  
+  /resendEmail:
+    post:
+      summary: Resend email verification code
+      responses:
+        '200':
+          description: Email verified
+        '405':
+          description: Request method isn't POST
+        '400':
+          description: Invalid request payload or Missing required fields
+        '500':
+          description: Couldn't load cognito config or Couldn't verify email
+      security:
+        - username: []
+
+  /welcome:
+    get:
+      summary: Welcome page
+      responses:
+        '200':
+          description: Welcome page accessed
+        '401':
+          description: Couldn't find refresh token
+        '500':
+          description: Unable to load SDK config or Failed to refresh session
+      security:
+        - idToken: []
+        - accessToken: []
+        - refreshToken: []
+
+  /saveProfile:
+    post:
+      summary: Save user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  type: object
+                  properties:
+                    bio:
+                      type: string
+                    experience:
+                      type: string
+                    projects:
+                      type: string
+      responses:
+        '200':
+          description: Profile saved
+        '405':
+          description: Request method isn't POST
+        '401':
+          description: Couldn't get userid from token
+        '400':
+          description: Invalid request payload or Missing required fields
+        '500':
+          description: Database error
+      security:
+        - idToken: []
+        - accessToken: []
+        - refreshToken: []
+  
+  /getAnswers:
+    post:
+      summary: Get answers from HTML content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                html:
+                  type: string
+      responses:
+        '200':
+          description: Answers retrieved
+        '401':
+          description: Couldn't get userid from token
+        '500':
+          description: Couldn't get answers
+        '400':
+          description: Invalid request payload
+      security:
+        - idToken: []
+        - accessToken: []
+        - refreshToken: []
+
+components:
+  securitySchemes:
+    idToken:
+      type: apiKey
+      in: cookie
+      name: idToken
+    accessToken:
+      type: apiKey
+      in: cookie
+      name: accessToken
+    refreshToken:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+    username:
+      type: apiKey
+      in: cookie
+      name: username

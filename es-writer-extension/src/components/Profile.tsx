@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react"
 
+import { api_endpoint } from "../contents/index"
+
 const Profile = () => {
   const [profile, setProfile] = useState({
     bio: "",
@@ -9,7 +11,7 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch("http://35.167.89.55/getProfile", {
+      const response = await fetch(api_endpoint + "/getProfile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

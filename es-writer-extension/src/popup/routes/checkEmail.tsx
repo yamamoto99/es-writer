@@ -1,6 +1,8 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+import { api_endpoint } from "../../contents/index"
+
 const checkEmail = () => {
   const [verificationCode, setVerificationCode] = useState("")
   const navigate = useNavigate()
@@ -9,7 +11,7 @@ const checkEmail = () => {
 	  event.preventDefault()
 	  console.log("Check Email form submitted")
 
-	  const response = await fetch("http://35.167.89.55/checkEmail", {
+	  const response = await fetch(api_endpoint + "/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
@@ -27,7 +29,7 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch("http://35.167.89.55/resendEmail", {
+	  fetch(api_endpoint + "/resendEmail", {
 	    method: "POST",
 	  }).then(response => {
       if (response.ok) {
@@ -40,20 +42,30 @@ const checkEmail = () => {
   }
 
   return (
-    <>
-    <form onSubmit={handleCheckEmail}>
-      <h2>Check Email</h2>
+    <form onSubmit={handleCheckEmail} className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="VerificationCode"
         value={verificationCode}
         onChange={(e) => setVerificationCode(e.target.value)}
         required
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
-      <button type="submit">Check Email</button>
+      <div className="flex justify-center space-x-3">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white rounded-md px-3 py-2 hover:bg-blue-700"
+        >
+          Check
+        </button>
+        <button
+          onClick={handleResendEmail}
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
+        >
+          resend
+        </button>
+      </div>
     </form>
-    <button onClick={handleResendEmail}>resend Email</button>
-    </>
   )
 }
 
