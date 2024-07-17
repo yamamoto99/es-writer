@@ -10,8 +10,12 @@ variable "aws_region" {
 	description = "AWS Region"
 }
 
-variable "iam_username" {
-	description = "IAM username"
+variable "availability_zone_1" {
+	description = "The availability zone"
+}
+
+variable "availability_zone_2" {
+	description = "The availability zone"
 }
 
 variable "rds_pass" {
@@ -40,8 +44,4 @@ variable "domain_name" {
 
 variable "subdomain_name" {
 	description = "The subdomain name for Route 53"
-}
-
-variable "alb_dns_name" {
-	description = "The DNS name of the ALB"
 }

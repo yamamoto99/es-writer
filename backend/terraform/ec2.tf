@@ -2,9 +2,9 @@
 # EC2 Instance
 # ====================
 resource "aws_instance" "es-writer-app" {
-	ami                         = "ami-0f226ae5ce4b11922"
+	ami                         = "ami-0eda63ec8af4f056e"
 	instance_type               = "t2.micro"
-	subnet_id                   = "${aws_subnet.public_app.id}"
+	subnet_id                   = "${aws_subnet.public_app_1.id}"
 	associate_public_ip_address = true
 	vpc_security_group_ids      = ["${aws_security_group.es-writer-app-sg.id}"]
 	key_name                    = "${var.key_name}"

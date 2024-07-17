@@ -18,7 +18,7 @@ resource "aws_db_parameter_group" "es-writer-db-pg" {
 # RDSサーバーの設定
 resource "aws_db_instance" "main" {
 	identifier             = "es-writer-db"
-	db_name                = "es-writer-db"
+	db_name                = "es_writer_db"
 	allocated_storage      = 20
 	storage_type           = "gp2"
 	engine                 = "postgres"
@@ -31,7 +31,7 @@ resource "aws_db_instance" "main" {
 	parameter_group_name   = "${aws_db_parameter_group.es-writer-db-pg.name}"
 	skip_final_snapshot    = true
 	multi_az               = false
-	availability_zone      = "${var.aws_region}"
+	availability_zone      = var.availability_zone_1
 	publicly_accessible    = false
 	tags = {
 		Name = "es-writer-db"

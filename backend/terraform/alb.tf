@@ -6,7 +6,7 @@ resource "aws_lb" "es-writer-alb" {
 	internal           = false
 	load_balancer_type = "application"
 	security_groups    = [aws_security_group.es-writer-web-sg.id]
-	subnets            = [aws_subnet.public_app.id]
+	subnets            = [aws_subnet.public_app_1.id, aws_subnet.public_app_2.id]
 	ip_address_type    = "ipv4"
 
 	tags = {

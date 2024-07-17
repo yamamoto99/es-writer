@@ -15,22 +15,33 @@ resource "aws_vpc" "es-writer" {
 # Subnet
 # ====================
 # パブリックサブネット
-resource "aws_subnet" "public_app" {
+resource "aws_subnet" "public_app_1" {
 	vpc_id                  = "${aws_vpc.es-writer.id}"
 	cidr_block              = "10.0.1.0/24"
 	map_public_ip_on_launch = true
-	availability_zone       = "us-west-2a"
+	availability_zone       = var.availability_zone_1
 	tags = {
-		Name = "public-web"
+		Name = "public-app-1"
+	}
+}
+
+# パブリックサブネット
+resource "aws_subnet" "public_app_2" {
+	vpc_id                  = "${aws_vpc.es-writer.id}"
+	cidr_block              = "10.0.2.0/24"
+	map_public_ip_on_launch = true
+	availability_zone       = var.availability_zone_2
+	tags = {
+		Name = "public-app-2"
 	}
 }
 
 # プライベートサブネット
 resource "aws_subnet" "private_db_1" {
 	vpc_id                  = "${aws_vpc.es-writer.id}"
-	cidr_block              = "10.0.2.0/24"
+	cidr_block              = "10.0.3.0/24"
 	map_public_ip_on_launch = false
-	availability_zone       = "us-west-2a"
+	availability_zone       = var.availability_zone_1
 	tags = {
 		Name = "private-db-1"
 	}
@@ -39,9 +50,9 @@ resource "aws_subnet" "private_db_1" {
 # プライベートサブネット
 resource "aws_subnet" "private_db_2" {
 	vpc_id                  = "${aws_vpc.es-writer.id}"
-	cidr_block              = "10.0.3.0/24"
+	cidr_block              = "10.0.4.0/24"
 	map_public_ip_on_launch = false
-	availability_zone       = "us-west-2c"
+	availability_zone       = var.availability_zone_2
 	tags = {
 		Name = "private-db-2"
 	}
@@ -52,7 +63,7 @@ resource "aws_subnet" "private_db_2" {
 # ====================
 # WEBサーバーのセキュリティグループ
 resource "aws_security_group" "es-writer-web-sg" {
-	vpc_id      = "${aws_vpc.es-writer.id}"
+	vpc_id      = aws_vpc.es-writer.id
 	name        = "es-writer-web-sg"
 	description = "es-writer-web-sg"
 	tags = {
@@ -72,36 +83,15 @@ resource "aws_security_group" "es-writer-web-sg" {
 		protocol    = "tcp"
 		cidr_blocks = ["0.0.0.0/0"]
 	}
-
-	egress {
-		from_port   = 8080
-		to_port     = 8080
-		protocol    = "tcp"
-		security_groups = [aws_security_group.es-writer-app-sg.id]
-	}
 }
 
 # アプリケーションサーバーのセキュリティグループ
 resource "aws_security_group" "es-writer-app-sg" {
-	vpc_id      = "${aws_vpc.es-writer.id}"
+	vpc_id      = aws_vpc.es-writer.id
 	name        = "es-writer-app-sg"
 	description = "es-writer-app-sg"
 	tags = {
-	   Name = "es-writer-app-sg"
-	}
-
-	ingress {
-		from_port   = 80
-		to_port     = 80
-		protocol    = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
-
-	egress {
-		from_port   = 5432
-		to_port     = 5432
-		protocol    = "tcp"
-		security_groups = [aws_security_group.es-writer-db-sg.id]
+		Name = "es-writer-app-sg"
 	}
 }
 
@@ -111,14 +101,7 @@ resource "aws_security_group" "es-writer-db-sg" {
 	description = "es-writer-db-sg"
 	vpc_id      = aws_vpc.es-writer.id
 	tags = {
-	   Name = "es-writer-db-sg"
-	}
-
-	ingress {
-		from_port       = 5432
-		to_port         = 5432
-		protocol        = "tcp"
-		security_groups = [aws_security_group.es-writer-app-sg.id]
+		Name = "es-writer-db-sg"
 	}
 }
 
@@ -128,13 +111,53 @@ resource "aws_security_group" "es-writer-admin-sg" {
 	description = "es-writer-admin-sg"
 	vpc_id      = aws_vpc.es-writer.id
 	tags = {
-	   Name = "es-writer-admin-sg"
+		Name = "es-writer-admin-sg"
 	}
 
 	ingress {
 		from_port   = 22
 		to_port     = 22
 		protocol    = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
+		cidr_blocks = ["0.0.0.0/0"]  # セキュリティ上、特定のIPアドレス範囲に制限することを推奨します
 	}
+}
+
+# WEBサーバーからアプリケーションサーバーへのアクセスを許可するルール
+resource "aws_security_group_rule" "web_to_app" {
+	type                     = "egress"
+	from_port                = 8080
+	to_port                  = 8080
+	protocol                 = "tcp"
+	security_group_id        = aws_security_group.es-writer-web-sg.id
+	source_security_group_id = aws_security_group.es-writer-app-sg.id
+}
+
+# アプリケーションサーバーがWEBサーバーからのアクセスを受け入れるルール
+resource "aws_security_group_rule" "app_from_web" {
+	type                     = "ingress"
+	from_port                = 80
+	to_port                  = 80
+	protocol                 = "tcp"
+	security_group_id        = aws_security_group.es-writer-app-sg.id
+	source_security_group_id = aws_security_group.es-writer-web-sg.id
+}
+
+# アプリケーションサーバーからDBサーバーへのアクセスをDB側で許可するルール
+resource "aws_security_group_rule" "es-writer-ingress-db" {
+	type                     = "ingress"
+	from_port                = 5432
+	to_port                  = 5432
+	protocol                 = "tcp"
+	security_group_id        = aws_security_group.es-writer-db-sg.id
+	source_security_group_id = aws_security_group.es-writer-app-sg.id
+}
+
+# アプリケーションサーバーからDBサーバーへのアクセスをEC2側で許可するルール
+resource "aws_security_group_rule" "es-writer-egress-ec2" {
+	type                     = "egress"
+	from_port                = 5432
+	to_port                  = 5432
+	protocol                 = "tcp"
+	security_group_id        = aws_security_group.es-writer-app-sg.id
+	source_security_group_id = aws_security_group.es-writer-db-sg.id
 }
