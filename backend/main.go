@@ -54,7 +54,7 @@ func main() {
 	var dbPassword string = os.Getenv("DB_PASSWORD")
 	var dbName string = os.Getenv("DB_NAME")
 	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
-		log.Fatalf("環境変数が設定されていません:1")
+		log.Fatalf("データベースの環境変数が設定されていません")
 	}
 
 	db, err = sql.Open("postgres", fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName))
