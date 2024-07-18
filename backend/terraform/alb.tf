@@ -10,7 +10,7 @@ resource "aws_lb" "es-writer-alb" {
 	ip_address_type    = "ipv4"
 
 	tags = {
-		Name = "tf_test_alb"
+		Name = "es-writer-alb"
 	}
 }
 
@@ -32,7 +32,7 @@ resource "aws_lb_target_group" "es-writer-target-group" {
 
 	health_check {
 		interval            = 30
-		path                = "/"
+		path                = "/hello_world"
 		port                = "traffic-port"
 		protocol            = "HTTP"
 		timeout             = 5
