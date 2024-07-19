@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   api:
     build: .
@@ -6,10 +7,11 @@ services:
       COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
       TOKEN_KEY_URL: ${TOKEN_KEY_URL}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: testdb
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
     ports:
       - "8080:8080"
     depends_on:
@@ -17,18 +19,11 @@ services:
   db:
     image: postgres:13
     container_name: postgres
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: testdb
+      POSTGRES_DB: test_db
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
-  phppgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - db

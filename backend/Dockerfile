@@ -14,11 +14,16 @@ RUN go mod download
 # ソースコードをコピー
 COPY ./ ./
 
-# APIサーバーをビルド
-RUN go build -o main .
+# マイグレーションツールとAPIサーバーをビルド
+RUN go build -o /app/migrate/main ./migrate
+RUN go build -o /app/main .
 
 # ポート8080を公開
 EXPOSE 8080
 
-# APIサーバーを実行
-CMD ["./main"]
+# マイグレーションを実行してからAPIサーバーを起動するスクリプトを作成
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# スクリプトを実行
+CMD ["/app/start.sh"]
