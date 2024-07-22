@@ -34,6 +34,7 @@ const checkEmail = () => {
 	  }).then(response => {
       if (response.ok) {
         console.log("Check Email successful")
+        alert("Resend Email successful")
       } else {
         console.error("Check Email failed")
         alert("Resend Email failed")
@@ -60,6 +61,7 @@ const checkEmail = () => {
         </button>
         <button
           onClick={handleResendEmail}
+          type="button"
           className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
         >
           resend
