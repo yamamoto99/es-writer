@@ -19,6 +19,7 @@ type IIinfrastructure interface {
 	ValidateToken(c echo.Context, accessToken string) (model.LoginUser, error)
 	SignUp(c echo.Context, signUpUser model.SignUpUser) (model.User, error)
 	CheckEmail(c echo.Context, checkEmail model.CheckEmail) (bool, error)
+	ResendEmail(c echo.Context, resendEmail model.ResendEmail) (bool, error)
 	LogIn(c echo.Context, logInUser model.LoginUser) (model.LoginResponse, error)
 	RefreshToken(c echo.Context, refreshToken string) (model.LoginResponse, model.LoginUser, error)
 	GetUserID(c echo.Context, accessToken string) (string, error)
@@ -97,6 +98,25 @@ func (i *infrastructure) CheckEmail(c echo.Context, checkEmail model.CheckEmail)
 	}
 
 	_, err = svc.ConfirmSignUp(c.Request().Context(), confirmSignUpInput)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (i *infrastructure) ResendEmail(c echo.Context, resendEmail model.ResendEmail) (bool, error) {
+	svc, err := i.CreateCognitoClient(c)
+	if err != nil {
+		return false, err
+	}
+
+	resendInput := &cognitoidentityprovider.ResendConfirmationCodeInput{
+		ClientId: aws.String(i.clientID),
+		Username: aws.String(resendEmail.Username),
+	}
+
+	_, err = svc.ResendConfirmationCode(c.Request().Context(), resendInput)
 	if err != nil {
 		return false, err
 	}

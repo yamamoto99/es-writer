@@ -25,6 +25,7 @@ func NewRouter(
 		authGroup.Use(cors.SetupAuthCORS())
 		authGroup.POST("/signup", ac.SignUp)
 		authGroup.POST("/checkEmail", ac.CheckEmail)
+		authGroup.POST("/resendEmail", ac.ResendEmail)
 		authGroup.POST("/login", ac.Login)
 	}
 	appGroup := e.Group("/app")

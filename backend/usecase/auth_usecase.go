@@ -12,6 +12,7 @@ import (
 type IAuthUsecase interface {
 	SignUp(c echo.Context, signUpUser model.SignUpUser) (model.User, error)
 	CheckEmail(c echo.Context, checkEmail model.CheckEmail) (bool, error)
+	ResendEmail(c echo.Context, resendEmail model.ResendEmail) (bool, error)
 	LogIn(c echo.Context, logInUser model.LoginUser) (model.LoginResponse, error)
 	AccessToken(c echo.Context, accessToken string) (model.LoginUser, error)
 	RefreshToken(c echo.Context, refreshToken string) (model.LoginResponse, model.LoginUser, error)
@@ -48,6 +49,15 @@ func (au *authUsecase) SignUp(c echo.Context, signUpUser model.SignUpUser) (mode
 
 func (au *authUsecase) CheckEmail(c echo.Context, checkEmail model.CheckEmail) (bool, error) {
 	res, err := au.infrastructure.CheckEmail(c, checkEmail)
+	if err != nil {
+		return false, err
+	}
+
+	return res, nil
+}
+
+func (au *authUsecase) ResendEmail(c echo.Context, resendEmail model.ResendEmail) (bool, error) {
+	res, err := au.infrastructure.ResendEmail(c, resendEmail)
 	if err != nil {
 		return false, err
 	}

@@ -13,6 +13,7 @@ import (
 type IAuthController interface {
 	SignUp(c echo.Context) error
 	CheckEmail(c echo.Context) error
+	ResendEmail(c echo.Context) error
 	Login(c echo.Context) error
 }
 
@@ -58,6 +59,26 @@ func (ac *authController) CheckEmail(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, checkRes)
+}
+
+func (ac *authController) ResendEmail(c echo.Context) error {
+	resendEmail := model.ResendEmail{}
+	if err := c.Bind(&resendEmail); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	usernameCookie, err := c.Cookie("username")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
+	resendEmail.Username = usernameCookie.Value
+
+	resendRes, err := ac.authUsecase.ResendEmail(c, resendEmail)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, resendRes)
 }
 
 func (ac *authController) Login(c echo.Context) error {

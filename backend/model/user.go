@@ -28,6 +28,10 @@ type CheckEmail struct {
 	VerificationCode string `json:"verificationCode"`
 }
 
+type ResendEmail struct {
+	Username string `json:"username"`
+}
+
 type LoginUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
