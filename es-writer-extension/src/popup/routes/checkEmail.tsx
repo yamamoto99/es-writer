@@ -11,7 +11,7 @@ const checkEmail = () => {
 	  event.preventDefault()
 	  console.log("Check Email form submitted")
 
-	  const response = await fetch(api_endpoint + "/checkEmail", {
+	  const response = await fetch(api_endpoint + "/auth/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
@@ -29,7 +29,7 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch(api_endpoint + "/resendEmail", {
+	  fetch(api_endpoint + "/auth/resendEmail", {
 	    method: "POST",
 	  }).then(response => {
       if (response.ok) {

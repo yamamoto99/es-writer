@@ -16,7 +16,7 @@ const signIn = () => {
     event.preventDefault()
     console.log("SignIn form submitted")
 
-    const response = await fetch(api_endpoint + "/signin", {
+    const response = await fetch(api_endpoint + "/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

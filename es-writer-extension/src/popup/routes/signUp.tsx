@@ -16,7 +16,7 @@ const signUp = () => {
     event.preventDefault()
     console.log("SignUp form submitted")
 
-    const response = await fetch(api_endpoint + "/signup", {
+    const response = await fetch(api_endpoint + "/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
