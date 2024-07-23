@@ -38,6 +38,10 @@ func (uc *userController) UpdateProfile(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	if err := c.Validate(input); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	userRes, err := uc.userUsecase.UpdateProfile(c, input)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
