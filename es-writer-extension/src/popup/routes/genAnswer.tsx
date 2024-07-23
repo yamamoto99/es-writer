@@ -1,6 +1,7 @@
 /// <reference types="chrome"/>
 
 import { api_endpoint } from "../../contents/index"
+import getCookieValue from "../../contents/getCookieValue";
 
 function indexContents() {
   console.log("indexContents called");  // 関数呼び出しの確認用ログ
@@ -15,10 +16,13 @@ function indexContents() {
           const html_source = result[0].result;
           console.log("html loaded");
 
-          fetch(api_endpoint + "/getAnswers", {
+          const accessToken = getCookieValue('authToken');
+
+          fetch(api_endpoint + "/app/profile/generate/generateAnswers", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Authorization": `${accessToken}` // あとで変更
             },
             body: JSON.stringify({ html: html_source })
           })

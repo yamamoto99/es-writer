@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import "../../style.css";
+import getCookieValue from "../contents/getCookieValue";
 
 import { api_endpoint } from "../contents/index"
 
@@ -12,10 +13,14 @@ const ProfileForm = () => {
   const handleProfileSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const response = await fetch(api_endpoint + "/saveprofile", {
-      method: "POST",
+    const accessToken = getCookieValue('authToken');
+    console.log("accessToken:", accessToken);
+
+    const response = await fetch(api_endpoint + "/app/profile/updateProfile", {
+      method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `${accessToken}` // あとで変更
       },
       body: JSON.stringify({ bio, experience, projects })
     });

@@ -11,7 +11,7 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch(api_endpoint + "/getProfile", {
+      const response = await fetch(api_endpoint + "/app/profile/getProfile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

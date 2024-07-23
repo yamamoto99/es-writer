@@ -11,7 +11,7 @@ const checkEmail = () => {
 	  event.preventDefault()
 	  console.log("Check Email form submitted")
 
-	  const response = await fetch(api_endpoint + "/checkEmail", {
+	  const response = await fetch(api_endpoint + "/auth/checkEmail", {
 	    method: "POST",
 	    headers: {
 	  	"Content-Type": "application/json"
@@ -29,11 +29,12 @@ const checkEmail = () => {
   }
 
   function handleResendEmail() {
-	  fetch(api_endpoint + "/resendEmail", {
+	  fetch(api_endpoint + "/auth/resendEmail", {
 	    method: "POST",
 	  }).then(response => {
       if (response.ok) {
         console.log("Check Email successful")
+        alert("Resend Email successful")
       } else {
         console.error("Check Email failed")
         alert("Resend Email failed")
@@ -60,6 +61,7 @@ const checkEmail = () => {
         </button>
         <button
           onClick={handleResendEmail}
+          type="button"
           className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
         >
           resend
