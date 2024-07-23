@@ -25,19 +25,22 @@ PostgreSQLに接続する。ユーザー名はpostgresで、データベース�
 ```shell
 psql -U postgres -d testdb
 ```
-## phpmyadminからDBを操作する
-localhost5050にアクセス
-```shell
-http://localhost:5050
-```
-下記でログイン
-```
-user: user
-Password: password
-```
+## テーブル構造
+| フィールド名 | データ型 | JSON タグ | GORM タグ |
+|-------------|---------|-----------|-----------|
+| UserID      | string  | id        | gorm:unique not null |
+| Username    | string  | username  | unique not null |
+| Email       | string  | email     | - |
+| Bio         | string  | bio       | - |
+| Experience  | string  | experience| - |
+| Projects    | string  | projects  | - |
+| CreatedAt   | time.Time| created_at| - |
+| UpdatedAt   | time.Time| updated_at| - |
+
+## EC2接続方法
 >[!CAUTION]
 >現在はEC2にデプロイしていないです
-## EC2接続方法
+
 EC2に設定されたキーペアがある状態で
 ```
 ssh -i <秘密鍵名> <ユーザー名>@<パブリックIP>
