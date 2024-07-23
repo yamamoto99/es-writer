@@ -18,7 +18,7 @@ function indexContents() {
 
           const accessToken = getCookieValue('authToken');
 
-          fetch(api_endpoint + "/app/profile/generate/generateAnswers", {
+          fetch(api_endpoint + "/app/generate/generateAnswers", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

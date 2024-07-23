@@ -39,7 +39,7 @@ func NewRouter(
 			userGroup.GET("/getProfile", uc.GetProfile)
 			userGroup.PATCH("/updateProfile", uc.UpdateProfile)
 		}
-		generateGroup := userGroup.Group("/generate")
+		generateGroup := appGroup.Group("/generate")
 		{
 			generateGroup.POST("/generateAnswers", gc.GenerateAnswers)
 		}
