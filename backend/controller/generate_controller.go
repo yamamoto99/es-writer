@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"es-app/model"
 	"es-app/usecase"
 	"net/http"
 
@@ -23,13 +23,16 @@ func NewGenerateController(generateUsecase usecase.IGenerateUsecase) IGenerateCo
 }
 
 func (gc *generateController) GenerateAnswers(c echo.Context) error {
-	var html string
-	err := json.NewDecoder(c.Request().Body).Decode(&html)
-	if err != nil {
+	var html model.HtmlRequest
+	if err := c.Bind(&html); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	answers, err := gc.generateUsecase.GenerateAnswers(c, html)
+	if err := c.Validate(html); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	answers, err := gc.generateUsecase.GenerateAnswers(c, html.Html)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
