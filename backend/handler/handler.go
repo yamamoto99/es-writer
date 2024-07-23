@@ -4,6 +4,7 @@ import (
 	"es-app/controller"
 	"es-app/middleware/auth"
 	"es-app/middleware/cors"
+	"es-app/validator"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -17,6 +18,7 @@ func NewRouter(
 	gc controller.IGenerateController,
 ) *echo.Echo {
 	e := echo.New()
+	e.Validator = validator.NewValidator()
 	e.Use(middleware.Logger())
 	e.Logger.SetLevel(log.INFO)
 

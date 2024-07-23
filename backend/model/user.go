@@ -16,16 +16,16 @@ type User struct {
 }
 
 type SignUpUser struct {
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
+	Username  string    `json:"username" validate:"required"`
+	Email     string    `json:"email" validate:"required,email"`
+	Password  string    `json:"password" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CheckEmail struct {
 	Username         string `json:"username"`
-	VerificationCode string `json:"verificationCode"`
+	VerificationCode string `json:"verificationCode" validate:"required"`
 }
 
 type ResendEmail struct {
@@ -33,8 +33,8 @@ type ResendEmail struct {
 }
 
 type LoginUser struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type LoginResponse struct {
@@ -44,7 +44,7 @@ type LoginResponse struct {
 }
 
 type UserProfile struct {
-	Bio        string `json:"bio"`
-	Experience string `json:"experience"`
-	Projects   string `json:"projects"`
+	Bio        string `json:"bio" validate:"required"`
+	Experience string `json:"experience" validate:"required"`
+	Projects   string `json:"projects" validate:"required"`
 }

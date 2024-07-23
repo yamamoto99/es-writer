@@ -31,6 +31,10 @@ func (ac *authController) SignUp(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	if err := c.Validate(signUpUser); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	userRes, err := ac.authUsecase.SignUp(c, signUpUser)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -44,6 +48,10 @@ func (ac *authController) SignUp(c echo.Context) error {
 func (ac *authController) CheckEmail(c echo.Context) error {
 	checkStruct := model.CheckEmail{}
 	if err := c.Bind(&checkStruct); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(checkStruct); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -63,9 +71,6 @@ func (ac *authController) CheckEmail(c echo.Context) error {
 
 func (ac *authController) ResendEmail(c echo.Context) error {
 	resendEmail := model.ResendEmail{}
-	if err := c.Bind(&resendEmail); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
 
 	usernameCookie, err := c.Cookie("username")
 	if err != nil {
@@ -103,6 +108,10 @@ func (ac *authController) Login(c echo.Context) error {
 	}
 
 	if err := c.Bind(&loginUser); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(loginUser); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
