@@ -27,6 +27,7 @@ func SetLoginCookie(c echo.Context, idValue string, acValue string, refValue str
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
 	})
 	c.SetCookie(&http.Cookie{
 		Name:     "accessToken",
@@ -35,6 +36,7 @@ func SetLoginCookie(c echo.Context, idValue string, acValue string, refValue str
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
 	})
 	c.SetCookie(&http.Cookie{
 		Name:     "refreshToken",
@@ -43,5 +45,6 @@ func SetLoginCookie(c echo.Context, idValue string, acValue string, refValue str
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
 	})
 }
