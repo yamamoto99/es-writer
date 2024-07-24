@@ -3,7 +3,6 @@ package auth
 import (
 	"es-app/infrastructure"
 	"net/http"
-	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
