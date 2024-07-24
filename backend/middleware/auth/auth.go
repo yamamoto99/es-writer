@@ -3,6 +3,7 @@ package auth
 import (
 	"es-app/infrastructure"
 	"net/http"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,12 +23,16 @@ func NewAuthMiddleware(infrastructure infrastructure.IIinfrastructure) IAuthMidd
 func (a *authMiddleware) JwtMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			accessToken := c.Request().Header.Get("Authorization")
+			cookie, err := c.Cookie("accessToken")
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
+			}
+			accessToken := cookie.Value
 			if accessToken == "" {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
 			}
 
-			_, err := a.infrastructure.ValidateToken(c, accessToken)
+			_, err = a.infrastructure.ValidateToken(c, accessToken)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, "invalid token: "+err.Error())
 			}
