@@ -24,7 +24,6 @@ func SetupUserCORS() echo.MiddlewareFunc {
 			echo.HeaderOrigin,
 			echo.HeaderContentType,
 			echo.HeaderAccept,
-			echo.HeaderAuthorization,
 		},
 		AllowMethods: []string{"POST", "GET", "PATCH", "OPTIONS"},
 	})

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "../../style.css";
-import getCookieValue from "../contents/getCookieValue";
 
 import { api_endpoint } from "../contents/index"
 
@@ -10,17 +9,39 @@ const ProfileForm = () => {
   const [experience, setExperience] = useState("");
   const [projects, setProjects] = useState("");
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(api_endpoint + "/app/profile/getProfile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBio(data.bio || "");
+          setExperience(data.experience || "");
+          setProjects(data.projects || "");
+        } else {
+          console.error("Failed to fetch profile data");
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
   const handleProfileSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    const accessToken = getCookieValue('authToken');
-    console.log("accessToken:", accessToken);
 
     const response = await fetch(api_endpoint + "/app/profile/updateProfile", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `${accessToken}` // あとで変更
       },
       body: JSON.stringify({ bio, experience, projects })
     });
