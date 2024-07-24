@@ -14,16 +14,18 @@ Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 ### DB
 [![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev)
 ### AWS
-<img src="https://github.com/yamamoto99/es-writer/assets/111506108/09fad974-f683-481b-b8df-22a5f2568060" alt="Cognito" style="width:50px;">
-<img src="https://github.com/yamamoto99/es-writer/assets/111506108/51707ead-e210-4b7f-94a5-5576cafe5370" alt="EC2" style="width:50px;">
-<img src="https://github.com/yamamoto99/es-writer/assets/111506108/965308e0-8f41-4d6c-b5b7-cfecff26a6e5" alt="RDS" style="width:50px;">
-<img src="https://github.com/yamamoto99/es-writer/assets/111506108/bf8726eb-a203-48c4-a17f-2d333f1e1c48" alt="Bedrock" style="width:50px;"></br></br></br></br>
+<img src="https://github.com/user-attachments/assets/ec4c886d-e9f3-4d43-8f5f-b9f4420526b2" alt="Route53" style="width:50px;">
+<img src="https://github.com/user-attachments/assets/fb6b5674-a8ef-404a-bc45-608e7bc22e63" alt="ACM" style="width:50px;">
+<img src="https://github.com/user-attachments/assets/7d9bc826-969f-4075-a24a-17b604450a91" alt="Cognito" style="width:50px;">
+<img src="https://github.com/user-attachments/assets/ae912bcb-0be9-45ad-bd67-2934a09b6049" alt="ELB" style="width:50px;">
+<img src="https://github.com/user-attachments/assets/d7caa27f-e415-4a83-9356-704eb07bcc90" alt="EC2" style="width:50px;">
+<img src="https://github.com/user-attachments/assets/05d29ac2-a9ff-404d-9455-5cf04a6f8317" alt="RDS" style="width:50px;">
+</br></br></br></br>
 
-<img src="https://github.com/yamamoto99/es-writer/assets/111506108/d0f0816e-1e35-4771-9521-cb16a434858a" alt="Bedrock" style="width:1000px;">
+<img src="https://github.com/user-attachments/assets/229be83d-7bb1-45d8-8248-8b5aec23485b" alt="Bedrock" style="width:1000px;">
 
 ### Model
-<h4>Claude 3 Haiku</h4>
+<h4>Gemini 1.5 Flash</h4>
 
 ### Other
 [![My Skills](https://skillicons.dev/icons?i=git,github,githubactions,docker,terraform)](https://skillicons.dev)
-
