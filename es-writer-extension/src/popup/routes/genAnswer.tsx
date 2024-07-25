@@ -1,49 +1,51 @@
 /// <reference types="chrome"/>
 
-import { api_endpoint } from "../../contents/index"
-import getCookieValue from "../../contents/getCookieValue";
+import { api_endpoint } from "../../contents/index";
 
-function indexContents() {
-  console.log("indexContents called");  // 関数呼び出しの確認用ログ
+async function genAnswer() {
+  return new Promise<void>((resolve, reject) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
+      if (tabs[0] && tabs[0].id !== undefined) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: getActiveTabHTML
+        }, async result => {
+          if (result && result[0]) {
+            const html_source = result[0].result;            console.log("html loaded");
 
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (tabs[0] && tabs[0].id !== undefined) {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        func: getActiveTabHTML
-      }, result => {
-        if (result && result[0]) {
-          const html_source = result[0].result;
-          console.log("html loaded");
+            try {
+              const response = await fetch(api_endpoint + "/app/generate/generateAnswers", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ html: html_source })
+              });
 
-          const accessToken = getCookieValue('authToken');
+              if (!response.ok) {
+                console.error("Network response was not ok", response.statusText);
+                reject(new Error("Network response was not ok"));
+                return;
+              }
 
-          fetch(api_endpoint + "/app/generate/generateAnswers", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `${accessToken}` // あとで変更
-            },
-            body: JSON.stringify({ html: html_source })
-          })
-          .then(res => {
-            if (!res.ok) {
-              console.error("Network response was not ok", res.statusText);
-              return;
+              const answers = await response.json();
+              console.log("Received answers:", answers);
+              replaceTextareaText(answers);
+              resolve();
+            } catch (error) {
+              console.error("Fetch error:", error);
+              reject(error);
             }
-            return res.json();
-          })
-          .then(answers => {
-            console.log("Received answers:", answers); // 受け取ったデータをコンソールに出力
-            replaceTextareaText(answers);
-          });
-        } else {
-          console.error("Failed to get active tab HTML.");
-        }
-      });
-    } else {
-      console.error("No active tab found or tab ID is undefined.");
-    }
+          } else {
+            console.error("Failed to get active tab HTML.");
+            reject(new Error("Failed to get active tab HTML."));
+          }
+        });
+      } else {
+        console.error("No active tab found or tab ID is undefined.");
+        reject(new Error("No active tab found or tab ID is undefined."));
+      }
+    });
   });
 }
 
@@ -72,4 +74,4 @@ function replaceTextareas(answers: any) {
   });
 }
 
-export default indexContents;
+export default genAnswer;

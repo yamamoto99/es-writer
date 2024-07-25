@@ -57,7 +57,15 @@ function IndexPopup() {
       <div className="w-40 h-20">
         <button
           className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-4 mb-1"
-          onClick={genAnswer}
+          onClick={async () => {
+            navigate("/generating");
+            try {
+              await genAnswer();
+            } catch (error) {
+              console.error("Error generating answer:", error);
+            }
+            window.close();
+          }}
         >
           回答生成
         </button>
