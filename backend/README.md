@@ -21,9 +21,9 @@ docker ps
 ```shell
 docker exec -it <-コンテナID-> bash 
 ```
-PostgreSQLに接続する。ユーザー名はpostgresで、データベースはtestdb
+PostgreSQLに接続する。ユーザー名はpostgresで、データベースはtest_db
 ```shell
-psql -U postgres -d testdb
+psql -U postgres -d test_db
 ```
 ## テーブル構造
 | フィールド名 | データ型 | JSON タグ | GORM タグ |
