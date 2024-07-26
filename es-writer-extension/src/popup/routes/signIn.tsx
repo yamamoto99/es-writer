@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React from "react"
+import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 
 import { useStorage } from "@plasmohq/storage/hook"
@@ -6,23 +7,23 @@ import { useStorage } from "@plasmohq/storage/hook"
 import { api_endpoint } from "../../contents/index"
 import openProfileForm from "./openProfileForm"
 
-const signIn = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+const SignIn = () => {
   const navigate = useNavigate()
-
   const [loginState, setLoginState] = useStorage<string>("loginState")
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm()
 
-  const handleSignIn = async (event: React.FormEvent) => {
-    event.preventDefault()
+  const onSubmit = async (data) => {
     console.log("SignIn form submitted")
-
     const response = await fetch(api_endpoint + "/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify(data)
     })
 
     if (response.ok) {
@@ -37,24 +38,32 @@ const signIn = () => {
 
   return (
     <form
-      onSubmit={handleSignIn}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
+        {...register("username", {
+          required: "Username is required"
+        })}
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
+      {errors.username && typeof errors.username.message === "string" && (
+        <span className="text-red-500 text-xs">{errors.username.message}</span>
+      )}
+
       <input
         type="password"
         placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
+        {...register("password", {
+          required: "Password is required"
+        })}
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
+      {errors.password && typeof errors.password.message === "string" && (
+        <span className="text-red-500 text-xs">{errors.password.message}</span>
+      )}
+
       <div className="flex justify-center space-x-4">
         <button
           type="submit"
@@ -74,4 +83,4 @@ const signIn = () => {
   )
 }
 
-export default signIn
+export default SignIn
