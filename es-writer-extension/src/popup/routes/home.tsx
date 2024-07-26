@@ -1,24 +1,35 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useStorage } from "@plasmohq/storage/hook"
-import genAnswer from "./genAnswer";
-import openProfileForm from "./openProfileForm";
-import { api_endpoint } from "../../contents/index"
-import "../../../style.css";
-import LogOut from "./logOut";
+import React, { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
-async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
+import { useStorage } from "@plasmohq/storage/hook"
+
+import { api_endpoint } from "../../contents/index"
+import genAnswer from "./genAnswer"
+import openProfileForm from "./openProfileForm"
+
+import "../../../style.css"
+
+import LogOut from "./logOut"
+
+async function fetchData(
+  loginState: string | undefined,
+  setLoginState: (loginState: string) => void
+) {
   try {
     const response = await fetch(api_endpoint + "/auth/login", {
       method: "POST",
-      credentials: "include",
-    });
-    
+      credentials: "include"
+    })
+
     if (response.ok) {
       setLoginState("logged-in")
     } else {
-      if (typeof loginState === "undefined" || loginState === "not-logged-in" || loginState === "logged-in") {
-        setLoginState("not-logged-in");
+      if (
+        typeof loginState === "undefined" ||
+        loginState === "not-logged-in" ||
+        loginState === "logged-in"
+      ) {
+        setLoginState("not-logged-in")
       }
     }
   } catch (error) {
@@ -74,8 +85,7 @@ function IndexPopup() {
         </button>
         <button
           className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-2"
-          onClick={openProfileForm}
-        >
+          onClick={openProfileForm}>
           経歴入力
         </button>
         <LogOut />
