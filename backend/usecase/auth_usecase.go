@@ -16,6 +16,7 @@ type IAuthUsecase interface {
 	LogIn(c echo.Context, logInUser model.LoginUser) (model.LoginResponse, error)
 	AccessToken(c echo.Context, accessToken string) (model.LoginUser, error)
 	RefreshToken(c echo.Context, refreshToken string) (model.LoginResponse, model.LoginUser, error)
+	LogOut(c echo.Context, accessToken string) error
 }
 
 type authUsecase struct {
@@ -90,4 +91,12 @@ func (au *authUsecase) RefreshToken(c echo.Context, refreshToken string) (model.
 	}
 
 	return newToken, res, err
+}
+
+func (au *authUsecase) LogOut(c echo.Context, accessToken string) error {
+	err := au.infrastructure.LogOut(c, accessToken)
+	if err != nil {
+		return err
+	}
+	return nil
 }

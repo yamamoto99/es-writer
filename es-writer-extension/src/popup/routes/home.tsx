@@ -9,13 +9,16 @@ import openProfileForm from "./openProfileForm"
 
 import "../../../style.css"
 
+import LogOut from "./logOut"
+
 async function fetchData(
   loginState: string | undefined,
   setLoginState: (loginState: string) => void
 ) {
   try {
     const response = await fetch(api_endpoint + "/auth/login", {
-      method: "POST"
+      method: "POST",
+      credentials: "include"
     })
 
     if (response.ok) {
@@ -66,7 +69,7 @@ function IndexPopup() {
     )
   } else if (loginState === "logged-in") {
     return (
-      <div className="w-40 h-20">
+      <div className="w-40 h-22">
         <button
           className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-4 mb-1"
           onClick={async () => {
@@ -81,10 +84,11 @@ function IndexPopup() {
           回答生成
         </button>
         <button
-          className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-4"
+          className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-2"
           onClick={openProfileForm}>
           経歴入力
         </button>
+        <LogOut />
       </div>
     )
   } else if (loginState === "signUp") {
