@@ -1,5 +1,6 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import ProfileForm from "../components/ProfileForm";
+import React from "react"
+import ReactDOM from "react-dom"
 
-ReactDOM.render(<ProfileForm />, document.getElementById("root"));
+import ProfileForm from "../components/ProfileForm"
+
+ReactDOM.render(<ProfileForm />, document.getElementById("root"))

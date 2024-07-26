@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react"
 
 const Generating: React.FC = () => {
   return (
@@ -9,12 +9,11 @@ const Generating: React.FC = () => {
           <div
             key={index}
             className={`w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce`}
-            style={{ animationDelay: `${index * 0.2}s` }}
-          ></div>
+            style={{ animationDelay: `${index * 0.2}s` }}></div>
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Generating;
+export default Generating

@@ -10,7 +10,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    ".plasmo/index.d.ts",
-  ]
+  "include": [".plasmo/index.d.ts"]
 }

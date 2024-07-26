@@ -3,16 +3,11 @@ info:
   title: es-writer API
   version: 1.0.0
 paths:
-  /:
-    get:
-      summary: Root endpoint
-      responses:
-        '200':
-          description: OK
-
-  /signup:
+  /auth/signup:
     post:
       summary: User signup
+      tags:
+        - auth
       description: Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character
       requestBody:
         required: true
@@ -33,24 +28,38 @@ paths:
       responses:
         '201':
           description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
           headers:
             Set-Cookie:
               description: Set username
               schema:
                 type: string
-        '405':
-          description: Request method isn't POST
         '400':
-          description: Invalid request payload or Missing required fields
+          description: Invalid request payload
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
         '500':
           description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
 
   
-  /signin:
+  /auth/login:
     post:
-      summary: User signin
+      summary: User login
+      tags:
+        - auth
       requestBody:
-        required: true
+        required: false
         content:
           application/json:
             schema:
@@ -58,8 +67,10 @@ paths:
               properties:
                 username:
                   type: string
+                  example: test
                 password:
                   type: string
+                  example: aA1!abcd
       responses:
         '200':
           description: User signed in
@@ -68,18 +79,38 @@ paths:
               description: Set cookies for idToken, accessToken and refreshToken
               schema:
                 type: string
-        '405':
-          description: Request method isn't POST
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: test
+                  password:
+                    type: string
+                    example: aA1!abcd
         '400':
           description: Invalid request payload
-        '500':
-          description: Couldn't load cognito config
-        '401':
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
+        '403':
           description: Invalid username or password
-
-  /checkEmail:
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
+  /auth/checkEmail:
     post:
       summary: Check if email address is valid
+      tags:
+        - auth
+      parameters:
+        - $ref: '#/components/parameters/username'
       requestBody:
         required: true
         content:
@@ -88,52 +119,100 @@ paths:
               type: object
               properties:
                 verificationCode:
-                  type: string  
+                  type: string
       responses:
         '200':
           description: Email verified
-        '405':
-          description: Request method isn't POST
+          content:
+            boolean:
+              schema:
+                type: boolean
+                example: true
         '400':
           description: Invalid request payload or Missing required fields
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
+        '401':
+          description: Couldn't get username from cookie
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
         '500':
-          description: Couldn't load cognito config or Couldn't verify email
-      security:
-        - username: []
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
   
-  /resendEmail:
+  /auth/resendEmail:
     post:
       summary: Resend email verification code
+      tags:
+        - auth
+      parameters:
+        - $ref: '#/components/parameters/username'
       responses:
         '200':
-          description: Email verified
-        '405':
-          description: Request method isn't POST
+          description: Email verification code resent
+          content:
+            boolean:
+              schema:
+                type: boolean
+                example: true
         '400':
           description: Invalid request payload or Missing required fields
-        '500':
-          description: Couldn't load cognito config or Couldn't verify email
-      security:
-        - username: []
-
-  /verifySession:
-    get:
-      summary: Welcome page
-      responses:
-        '200':
-          description: Welcome page accessed
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
         '401':
-          description: Couldn't find refresh token
+          description: Couldn't get username from cookie
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
         '500':
-          description: Unable to load SDK config or Failed to refresh session
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: error message
+    
+  /app/profile/getProfile:
+    get:
+      summary: Get user profile
+      tags:
+        - app
+      responses:
+        '201':
+          description: Profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
       security:
         - idToken: []
         - accessToken: []
         - refreshToken: []
 
-  /saveProfile:
-    post:
-      summary: Save user profile
+  /app/profile/updateProfile:
+    patch:
+      summary: update user profile
+      tags:
+        - app
       requestBody:
         required: true
         content:
@@ -141,34 +220,35 @@ paths:
             schema:
               type: object
               properties:
-                profile:
-                  type: object
-                  properties:
-                    bio:
-                      type: string
-                    experience:
-                      type: string
-                    projects:
-                      type: string
+                bio:
+                  type: string
+                experience:
+                  type: string
+                projects:
+                  type: string
       responses:
-        '200':
+        '201':
           description: Profile saved
-        '405':
-          description: Request method isn't POST
-        '401':
-          description: Couldn't get userid from token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
-          description: Invalid request payload or Missing required fields
+          description: Invalid request payload
+        '401':
+          description: Unauthorized
         '500':
-          description: Database error
+          description: Internal server error
       security:
         - idToken: []
         - accessToken: []
         - refreshToken: []
   
-  /getAnswers:
+  /app/generate/getAnswers:
     post:
       summary: Get answers from HTML content
+      tags:
+        - app
       requestBody:
         required: true
         content:
@@ -179,14 +259,18 @@ paths:
                 html:
                   type: string
       responses:
-        '200':
+        '201':
           description: Answers retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answers'
         '401':
-          description: Couldn't get userid from token
-        '500':
-          description: Couldn't get answers
+          description: Unauthorized
         '400':
           description: Invalid request payload
+        '500':
+          description: Internal server error
       security:
         - idToken: []
         - accessToken: []
@@ -206,7 +290,50 @@ components:
       type: apiKey
       in: cookie
       name: refreshToken
+  parameters:
     username:
-      type: apiKey
-      in: cookie
       name: username
+      in: cookie
+      required: true
+      schema:
+        type: string
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 00000000-0000-0000-0000-000000000000
+        username:
+          type: string
+          example: test
+        email:
+          type: string
+          example: test@example.com
+        bio:
+          type: string
+          example: ""
+        experience:
+          type: string
+          example: ""
+        projects:
+          type: string
+          example: ""
+        created_at:
+          type: string
+          example: "2024-07-01T00:00:00.000000000Z"
+        updated_at:
+          type: string
+          example: "2024-07-01T00:00:00.000000000Z"
+    Answers:
+      type: object
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
