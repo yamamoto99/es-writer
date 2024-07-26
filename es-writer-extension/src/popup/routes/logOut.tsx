@@ -11,10 +11,10 @@ function LogOut() {
     try {
       const response = await fetch(api_endpoint + "/auth/logout", {
         method: "POST",
-        credentials: "include", // Cookie を含める
+        credentials: "include",
       });
       if (response.ok) {
-        setLoginState("not-logged-in");
+        await setLoginState("not-logged-in");
         navigate("/");
       } else {
         console.error("Logout failed");
@@ -25,8 +25,11 @@ function LogOut() {
   };
 
   return (
-    <button onClick={handleLogout}>
-      Logout
+    <button 
+      className="block mx-auto bg-gray-500 hover:bg-gray-700 text-white rounded-md w-24 h-8 p-2 mt-1 mb-4"
+      onClick={handleLogout}
+    >
+      ログアウト
     </button>
   );
 }
