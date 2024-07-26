@@ -15,6 +15,7 @@ type IAuthController interface {
 	CheckEmail(c echo.Context) error
 	ResendEmail(c echo.Context) error
 	Login(c echo.Context) error
+	LogOut(c echo.Context) error
 }
 
 type authController struct {
@@ -125,4 +126,24 @@ func (ac *authController) Login(c echo.Context) error {
 	controllerUtils.SetLoginCookie(c, loginRes.IDToken, loginRes.AccessToken, loginRes.RefreshToken)
 
 	return c.JSON(http.StatusOK, loginUser)
+}
+
+func (ac *authController) LogOut(c echo.Context) error {
+	accessToken, err := c.Cookie("accessToken")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Access token not found")
+	}
+
+	// Cognitoからのサインアウト
+	err = ac.authUsecase.LogOut(c, accessToken.Value)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// クライアント側でクッキーを削除するためのセット
+	controllerUtils.ClearLoginCookie(c)
+
+	c.Logger().Debug("🟡 Logged out")
+
+	return c.NoContent(http.StatusOK)
 }

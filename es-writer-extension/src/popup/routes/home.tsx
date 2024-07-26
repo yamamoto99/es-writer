@@ -75,6 +75,12 @@ function IndexPopup() {
         >
           経歴入力
         </button>
+        <button
+          className="block mx-auto bg-gray-500 hover:bg-gray-700 text-white rounded-md w-24 h-6 p-1 mt-1 mb-2"
+          onClick={() => { setLoginState("not-logged-in"); navigate("/logOut") }}
+        >
+          ログアウト
+        </button>
       </div>
     );
   }else if (loginState === "signUp") {

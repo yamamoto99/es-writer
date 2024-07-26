@@ -29,6 +29,7 @@ func NewRouter(
 		authGroup.POST("/checkEmail", ac.CheckEmail)
 		authGroup.POST("/resendEmail", ac.ResendEmail)
 		authGroup.POST("/login", ac.Login)
+		authGroup.POST("/logout", ac.LogOut)
 	}
 	appGroup := e.Group("/app")
 	{

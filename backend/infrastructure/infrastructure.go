@@ -23,6 +23,7 @@ type IIinfrastructure interface {
 	LogIn(c echo.Context, logInUser model.LoginUser) (model.LoginResponse, error)
 	RefreshToken(c echo.Context, refreshToken string) (model.LoginResponse, model.LoginUser, error)
 	GetUserID(c echo.Context, accessToken string) (string, error)
+	LogOut(c echo.Context, accessToken string) error
 }
 
 type infrastructure struct {
@@ -250,4 +251,22 @@ func (i *infrastructure) GetUserID(c echo.Context, accessToken string) (string, 
 	}
 
 	return sub, nil
+}
+
+func (i *infrastructure) LogOut(c echo.Context, accessToken string) error {
+	svc, err := i.CreateCognitoClient(c)
+	if err != nil {
+		return err
+	}
+
+	logoutInput := &cognitoidentityprovider.GlobalSignOutInput{
+		AccessToken: aws.String(accessToken),
+	}
+
+	_, err = svc.GlobalSignOut(c.Request().Context(), logoutInput)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -48,3 +48,24 @@ func SetLoginCookie(c echo.Context, idValue string, acValue string, refValue str
 		Path:     "/",
 	})
 }
+
+func ClearLoginCookie(c echo.Context) {
+	c.SetCookie(&http.Cookie{
+		Name:     "accessToken",
+		Value:    "",
+		MaxAge:  -1,
+		HttpOnly: true,
+		Secure:  false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+	c.SetCookie(&http.Cookie{
+		Name:     "refreshToken",
+		Value:    "",
+		MaxAge:  -1,
+		HttpOnly: true,
+		Secure:  false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+}
