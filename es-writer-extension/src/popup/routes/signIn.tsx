@@ -1,16 +1,17 @@
 import React, { useState } from "react"
-import { useStorage } from "@plasmohq/storage/hook"
 import { useNavigate } from "react-router-dom"
 
-import openProfileForm from "./openProfileForm"
+import { useStorage } from "@plasmohq/storage/hook"
+
 import { api_endpoint } from "../../contents/index"
+import openProfileForm from "./openProfileForm"
 
 const signIn = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
 
-  const [loginState, setLoginState] = useStorage<string>("loginState");
+  const [loginState, setLoginState] = useStorage<string>("loginState")
 
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -35,7 +36,9 @@ const signIn = () => {
   }
 
   return (
-    <form onSubmit={handleSignIn} className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
+    <form
+      onSubmit={handleSignIn}
+      className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="Username"
@@ -55,14 +58,17 @@ const signIn = () => {
       <div className="flex justify-center space-x-4">
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded-md px-3.5 py-2 hover:bg-blue-700"
-        >
-          Sign In</button>
+          className="bg-blue-500 text-white rounded-md px-3.5 py-2 hover:bg-blue-700">
+          Sign In
+        </button>
         <button
-          onClick={() => {setLoginState("not-logged-in");navigate("/")}}
-          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
-        >
-          Back</button>
+          onClick={() => {
+            setLoginState("not-logged-in")
+            navigate("/")
+          }}
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700">
+          Back
+        </button>
       </div>
     </form>
   )

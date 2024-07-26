@@ -13,6 +13,7 @@ pnpm install
 ```
 
 次にデベロップサーバーを立ち上げる
+
 ```
 pnpm dev
 ```
@@ -24,23 +25,32 @@ Chromeで開発者モードをオンにした上で、`es-writer-extension/build
 ## コマンド＆オプション一覧
 
 - プロダクションビルドを行う
+
 ```
-pnpm build 
+pnpm build
 ```
+
 - デベロップサーバーをたてる（HMRがきく）
+
 ```
 pnpm dev
 ```
+
 - プロダクションビルドをzipファイルにする
+
 ```
 pnpm build
 pnpm package
 ```
+
 or
+
 ```
 pnpm build --zip
 ```
+
 - ターゲットのブラウザを指定するオプション（デフォルトはchromeのmanifest v3）
+
 ```
 --target=firefox-mv3
 ```
