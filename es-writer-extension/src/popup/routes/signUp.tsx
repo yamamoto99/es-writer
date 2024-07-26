@@ -1,30 +1,56 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
 import { api_endpoint } from "../../contents/index"
 
-const signUp = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
+const SignUp = () => {
   const navigate = useNavigate()
+  const [, setLoginState] = useStorage<string>("loginState")
+  const [password, setPassword] = useState("")
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm()
 
-  const [loginState, setLoginState] = useStorage<string>("loginState")
+  // パスワードの入力を監視
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "password") {
+        setPassword(value.password || "")
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [watch])
 
-  const handleSignUp = async (event: React.FormEvent) => {
-    event.preventDefault()
+  // パスワードルールのチェック関数
+  const checkPasswordRules = (pass) => ({
+    hasNumber: /\d/.test(pass),
+    hasSpecialChar: /[!@#$%^&*]/.test(pass),
+    hasUpperCase: /[A-Z]/.test(pass),
+    hasLowerCase: /[a-z]/.test(pass),
+    isLongEnough: pass.length >= 8
+  })
+
+  const passwordRules = checkPasswordRules(password)
+
+  // 条件に応じて文字色を返す関数
+  const getColorClass = (condition: boolean) =>
+    condition ? "text-green-500" : "text-red-500"
+
+  const onSubmit = async (data) => {
     console.log("SignUp form submitted")
-
     const response = await fetch(api_endpoint + "/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ username, password, email })
+      body: JSON.stringify(data)
     })
-
     if (response.ok) {
       console.log("SignUp successful")
       setLoginState("checkEmail")
@@ -37,40 +63,68 @@ const signUp = () => {
 
   return (
     <form
-      onSubmit={handleSignUp}
-      className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col space-y-1.5 w-60 h-auto items-center mb-2 mt-2">
       <input
+        {...register("username", { required: "Username is required" })}
         type="text"
         placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
+      {errors.username && typeof errors.username.message === "string" && (
+        <span className="text-red-500 text-xs">{errors.username.message}</span>
+      )}
+
       <input
+        {...register("email", {
+          required: "Email is required",
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "Invalid email address"
+          }
+        })}
+        type="text"
+        placeholder="Email"
+        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
+      />
+      {errors.email && typeof errors.email.message === "string" && (
+        <span className="text-red-500 text-xs">{errors.email.message}</span>
+      )}
+
+      <input
+        {...register("password", {
+          required: "Password is required",
+          pattern: {
+            value: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
+            message: "Password does not meet the requirements"
+          }
+        })}
         type="password"
         placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
-      <div className="w-full text-gray-500 text-left px-4">
-        <h5>パスワードルール</h5>
-        <p>・1つの数字を含む</p>
-        <p>・1つの特殊文字を含む</p>
-        <p>・1つの大文字を含む</p>
-        <p>・1つの小文字を含む</p>
-        <p>・8文字以上である</p>
+      {errors.password && typeof errors.password.message === "string" && (
+        <span className="text-red-500 text-xs">{errors.password.message}</span>
+      )}
+      <div className="w-full text-left px-4">
+        <h5 className="text-gray-500">パスワードルール</h5>
+        <p className={getColorClass(passwordRules.hasNumber)}>
+          {passwordRules.hasNumber ? "○" : "×"} 1つの数字を含む
+        </p>
+        <p className={getColorClass(passwordRules.hasSpecialChar)}>
+          {passwordRules.hasSpecialChar ? "○" : "×"} 1つの特殊文字を含む
+        </p>
+        <p className={getColorClass(passwordRules.hasUpperCase)}>
+          {passwordRules.hasUpperCase ? "○" : "×"} 1つの大文字を含む
+        </p>
+        <p className={getColorClass(passwordRules.hasLowerCase)}>
+          {passwordRules.hasLowerCase ? "○" : "×"} 1つの小文字を含む
+        </p>
+        <p className={getColorClass(passwordRules.isLongEnough)}>
+          {passwordRules.isLongEnough ? "○" : "×"} 8文字以上である
+        </p>
       </div>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
-      />
+
       <div className="flex justify-center space-x-4">
         <button
           type="submit"
@@ -90,4 +144,4 @@ const signUp = () => {
   )
 }
 
-export default signUp
+export default SignUp
