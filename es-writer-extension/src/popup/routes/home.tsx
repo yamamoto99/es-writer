@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStorage } from "@plasmohq/storage/hook"
 import genAnswer from "./genAnswer";
@@ -7,7 +7,7 @@ import { api_endpoint } from "../../contents/index"
 import "../../../style.css";
 import LogOut from "./logOut";
 
-async function fetchData(setLoginState: (loginState: string) => void){
+async function fetchData(loginState: string | undefined, setLoginState: (loginState: string) => void){
   try {
     const response = await fetch(api_endpoint + "/auth/login", {
       method: "POST",
@@ -17,7 +17,9 @@ async function fetchData(setLoginState: (loginState: string) => void){
     if (response.ok) {
       setLoginState("logged-in");
     } else {
-      setLoginState("not-logged-in");
+      if (typeof loginState === "undefined" || loginState === "not-logged-in" || loginState === "logged-in") {
+        setLoginState("not-logged-in");
+      }
     }
   } catch (error) {
     console.error("Fetch error:", error);
@@ -28,6 +30,10 @@ async function fetchData(setLoginState: (loginState: string) => void){
 function IndexPopup() {
   const navigate = useNavigate();
   const [loginState, setLoginState] = useStorage<string>("loginState");
+
+  useEffect(() => {
+    fetchData(loginState, setLoginState);
+  }, []);
 
   if (loginState === "not-logged-in") {
     return (
