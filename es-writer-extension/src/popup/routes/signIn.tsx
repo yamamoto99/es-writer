@@ -44,7 +44,7 @@ const SignIn = () => {
         type="text"
         placeholder="Username"
         {...register("username", {
-          required: "Username is required"
+          required: "ユーザー名は必須です"
         })}
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
@@ -56,7 +56,7 @@ const SignIn = () => {
         type="password"
         placeholder="Password"
         {...register("password", {
-          required: "Password is required"
+          required: "パスワードは必須です"
         })}
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
