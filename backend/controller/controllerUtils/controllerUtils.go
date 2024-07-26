@@ -68,4 +68,13 @@ func ClearLoginCookie(c echo.Context) {
 		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 	})
+	c.SetCookie(&http.Cookie{
+		Name:     "idToken",
+		Value:    "",
+		MaxAge:  -1,
+		HttpOnly: true,
+		Secure:  false,
+		SameSite: http.SameSiteStrictMode,
+		Path:    "/",
+	})
 }
