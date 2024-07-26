@@ -54,7 +54,7 @@ function IndexPopup() {
     );
   } else if (loginState === "logged-in") {
     return (
-      <div className="w-40 h-20">
+      <div className="w-40 h-22">
         <button
           className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-4 mb-1"
           onClick={async () => {
@@ -70,14 +70,14 @@ function IndexPopup() {
           回答生成
         </button>
         <button
-          className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-4"
+          className="block mx-auto bg-blue-500 hover:bg-blue-700 text-white rounded-md w-32 h-8 p-2 mt-1 mb-2"
           onClick={openProfileForm}
         >
           経歴入力
         </button>
         <button
-          className="block mx-auto bg-gray-500 hover:bg-gray-700 text-white rounded-md w-24 h-6 p-1 mt-1 mb-2"
-          onClick={() => { setLoginState("not-logged-in"); navigate("/logOut") }}
+          className="block mx-auto bg-gray-500 hover:bg-gray-700 text-white rounded-md w-24 h-8 p-2 mt-1 mb-4"
+          onClick={() => { navigate("/logOut") }}
         >
           ログアウト
         </button>
