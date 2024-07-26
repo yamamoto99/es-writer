@@ -72,6 +72,10 @@ const SignUp = () => {
           pattern: {
             value: /^[\x20-\x7E]+$/,
             message: "使用可能文字は半角英数字・記号のみです"
+          },
+          maxLength: {
+            value: 20,
+            message: "ユーザー名は20文字以下にしてください"
           }
         })}
         type="text"
