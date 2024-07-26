@@ -32,9 +32,15 @@ const Profile = () => {
   return (
     <div>
       <h2>Profile</h2>
-      <p><strong>Bio:</strong> {profile.bio}</p>
-      <p><strong>Experience:</strong> {profile.experience}</p>
-      <p><strong>Projects:</strong> {profile.projects}</p>
+      <p>
+        <strong>Bio:</strong> {profile.bio}
+      </p>
+      <p>
+        <strong>Experience:</strong> {profile.experience}
+      </p>
+      <p>
+        <strong>Projects:</strong> {profile.projects}
+      </p>
     </div>
   )
 }

@@ -8,30 +8,30 @@ const checkEmail = () => {
   const navigate = useNavigate()
 
   const handleCheckEmail = async (event: React.FormEvent) => {
-	  event.preventDefault()
-	  console.log("Check Email form submitted")
+    event.preventDefault()
+    console.log("Check Email form submitted")
 
-	  const response = await fetch(api_endpoint + "/auth/checkEmail", {
-	    method: "POST",
-	    headers: {
-	  	"Content-Type": "application/json"
-	    },
-	    body: JSON.stringify({ verificationCode })
-	  })
+    const response = await fetch(api_endpoint + "/auth/checkEmail", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ verificationCode })
+    })
 
-	  if (response.ok) {
-	    console.log("Check Email successful")
-	    navigate("/signin")
-	  } else {
-	    console.error("Check Email failed")
-	    alert("Check Email failed")
-	  }
+    if (response.ok) {
+      console.log("Check Email successful")
+      navigate("/signin")
+    } else {
+      console.error("Check Email failed")
+      alert("Check Email failed")
+    }
   }
 
   function handleResendEmail() {
-	  fetch(api_endpoint + "/auth/resendEmail", {
-	    method: "POST",
-	  }).then(response => {
+    fetch(api_endpoint + "/auth/resendEmail", {
+      method: "POST"
+    }).then((response) => {
       if (response.ok) {
         console.log("Check Email successful")
         alert("Resend Email successful")
@@ -43,7 +43,9 @@ const checkEmail = () => {
   }
 
   return (
-    <form onSubmit={handleCheckEmail} className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
+    <form
+      onSubmit={handleCheckEmail}
+      className="flex flex-col space-y-1.5 w-40 items-center mb-2 mt-2">
       <input
         type="text"
         placeholder="VerificationCode"
@@ -55,15 +57,13 @@ const checkEmail = () => {
       <div className="flex justify-center space-x-3">
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded-md px-3 py-2 hover:bg-blue-700"
-        >
+          className="bg-blue-500 text-white rounded-md px-3 py-2 hover:bg-blue-700">
           Check
         </button>
         <button
           onClick={handleResendEmail}
           type="button"
-          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700"
-        >
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700">
           resend
         </button>
       </div>

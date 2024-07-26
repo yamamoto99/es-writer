@@ -1,13 +1,13 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 
+import CheckEmail from "./checkEmail"
+import Generating from "./generating"
 import Home from "./home"
 import SignIn from "./signIn"
 import SignUp from "./signUp"
-import CheckEmail from "./checkEmail"
-import Generating from "./generating"
 
-export default function Routing(){
+export default function Routing() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
