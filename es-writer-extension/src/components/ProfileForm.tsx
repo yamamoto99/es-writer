@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react"
 
-import "../../style.css";
+import "../../style.css"
 
 import { api_endpoint } from "../contents/index"
 
 const ProfileForm = () => {
-  const [bio, setBio] = useState("");
-  const [experience, setExperience] = useState("");
-  const [projects, setProjects] = useState("");
+  const [bio, setBio] = useState("")
+  const [experience, setExperience] = useState("")
+  const [projects, setProjects] = useState("")
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -15,43 +15,43 @@ const ProfileForm = () => {
         const response = await fetch(api_endpoint + "/app/profile/getProfile", {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           }
-        });
+        })
 
         if (response.ok) {
-          const data = await response.json();
-          setBio(data.bio || "");
-          setExperience(data.experience || "");
-          setProjects(data.projects || "");
+          const data = await response.json()
+          setBio(data.bio || "")
+          setExperience(data.experience || "")
+          setProjects(data.projects || "")
         } else {
-          console.error("Failed to fetch profile data");
+          console.error("Failed to fetch profile data")
         }
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile data:", error)
       }
-    };
+    }
 
-    fetchProfileData();
-  }, []);
+    fetchProfileData()
+  }, [])
 
   const handleProfileSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const response = await fetch(api_endpoint + "/app/profile/updateProfile", {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ bio, experience, projects })
-    });
+    })
 
     if (response.ok) {
-      alert("Profile saved successfully");
+      alert("Profile saved successfully")
     } else {
-      alert("Failed to save profile");
+      alert("Failed to save profile")
     }
-  };
+  }
 
   return (
     <form onSubmit={handleProfileSubmit} className="max-w-lg mx-auto">
@@ -89,9 +89,13 @@ const ProfileForm = () => {
           />
         </label>
       </div>
-      <button type="submit" className="block mx-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Save Profile</button>
+      <button
+        type="submit"
+        className="block mx-auto px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+        Save Profile
+      </button>
     </form>
-  );
-};
+  )
+}
 
-export default ProfileForm;
+export default ProfileForm
