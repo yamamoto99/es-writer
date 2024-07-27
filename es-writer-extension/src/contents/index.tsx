@@ -6,7 +6,7 @@ export const config: PlasmoCSConfig = {
 
 export const api_endpoint = "http://localhost:8080"
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.action === "getHTML") {
     sendResponse({ html: document.documentElement.outerHTML })
   } else if (request.action === "replaceTextareas") {
@@ -17,7 +17,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     })
     sendResponse({ success: true })
-  } else {
-    sendResponse({ success: false })
   }
 })
