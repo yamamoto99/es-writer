@@ -30,10 +30,11 @@ const SignUp = () => {
   // パスワードルールのチェック関数
   const checkPasswordRules = (pass) => ({
     hasNumber: /\d/.test(pass),
-    hasSpecialChar: /[!@#$%^&*]/.test(pass),
+    hasSpecialChar: /[\^$*.[\]{}()?"!@#%&\/\\,><':;|_~`=+\-]/.test(pass),
     hasUpperCase: /[A-Z]/.test(pass),
     hasLowerCase: /[a-z]/.test(pass),
-    isLongEnough: pass.length >= 8
+    isLongEnough: pass.length >= 8,
+    isAsciiPrintable: /^[\x20-\x7E]+$/.test(pass)
   })
 
   const passwordRules = checkPasswordRules(password)
@@ -66,7 +67,17 @@ const SignUp = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col space-y-1.5 w-60 h-auto items-center mb-2 mt-2">
       <input
-        {...register("username", { required: "Username is required" })}
+        {...register("username", {
+          required: "ユーザー名は必須です",
+          pattern: {
+            value: /^[\x20-\x7E]+$/,
+            message: "使用可能文字は半角英数字・記号のみです"
+          },
+          maxLength: {
+            value: 20,
+            message: "ユーザー名は20文字以下にしてください"
+          }
+        })}
         type="text"
         placeholder="Username"
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
@@ -77,10 +88,10 @@ const SignUp = () => {
 
       <input
         {...register("email", {
-          required: "Email is required",
+          required: "メールアドレスは必須です",
           pattern: {
             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Invalid email address"
+            message: "正しいメールアドレスを入力してください"
           }
         })}
         type="text"
@@ -93,10 +104,11 @@ const SignUp = () => {
 
       <input
         {...register("password", {
-          required: "Password is required",
+          required: "パスワードは必須です",
           pattern: {
-            value: /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
-            message: "Password does not meet the requirements"
+            value:
+              /^(?=.*\d)(?=.*[\^$*.[\]{}()?"!@#%&\/\\,><':;|_~`=+\-])(?=.*[a-z])(?=.*[A-Z])[\x20-\x7E]{8,}$/,
+            message: "パスワードが不正です"
           }
         })}
         type="password"
@@ -122,6 +134,9 @@ const SignUp = () => {
         </p>
         <p className={getColorClass(passwordRules.isLongEnough)}>
           {passwordRules.isLongEnough ? "○" : "×"} 8文字以上である
+        </p>
+        <p className={getColorClass(passwordRules.isAsciiPrintable)}>
+          {passwordRules.isAsciiPrintable ? "○" : "×"} 英数字・記号のみである
         </p>
       </div>
 
