@@ -52,7 +52,9 @@ const CheckEmail = () => {
         type="text"
         placeholder="VerificationCode"
         {...register("verificationCode", {
-          required: "コードを入力してください"
+          required: "コードを入力してください",
+          minLength: { value: 6, message: "正しいコードを入力してください" },
+          maxLength: { value: 6, message: "正しいコードを入力してください" }
         })}
         className="border border-gray-300 rounded-md px-4 py-1 w-5/6"
       />
