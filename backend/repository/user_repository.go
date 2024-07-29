@@ -10,6 +10,7 @@ import (
 type IUserRepository interface {
 	GetUser(c echo.Context, id string) (model.User, error)
 	UpdateUser(c echo.Context, id string, input model.User) (model.User, error)
+	FindByEmail(c echo.Context, email string) (model.User, error)
 }
 
 type userRepository struct {
@@ -36,6 +37,18 @@ func (r *userRepository) UpdateUser(c echo.Context, id string, input model.User)
 	var user model.User
 	result := r.db.Model(&user).Where("user_id = ?", id).Updates(input).WithContext(c.Request().Context())
 	if result.Error != nil {
+		return model.User{}, result.Error
+	}
+	return user, nil
+}
+
+func (r *userRepository) FindByEmail(c echo.Context, email string) (model.User, error) {
+	var user model.User
+	result := r.db.WithContext(c.Request().Context()).First(&user, "email = ?", email)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return model.User{}, nil
+		}
 		return model.User{}, result.Error
 	}
 	return user, nil

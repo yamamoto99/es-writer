@@ -26,7 +26,7 @@ const CheckEmail = () => {
       navigate("/signin")
     } else {
       console.error("Check Email failed")
-      alert("Check Email failed")
+      alert("認証コードが違います")
     }
   }
 

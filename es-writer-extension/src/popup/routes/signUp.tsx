@@ -56,9 +56,23 @@ const SignUp = () => {
       console.log("SignUp successful")
       setLoginState("checkEmail")
       navigate("/checkEmail")
+    }else if (response.status === 409) {
+      const errorText = await response.text()
+      if (errorText.includes("メールアドレスが既に登録されています")) {
+        alert("メールアドレスが既に登録されています")
+      } else if (errorText.includes("ユーザー名が既に登録されています")) {
+        alert("ユーザー名が既に登録されています")
+      } else {
+        alert("サインアップに失敗しました")
+      }
     } else {
+      if (response.status == 500) {
+        alert("サーバーエラーが発生しました")
+      }else {
+        alert("サインアップに失敗しました")
+      }
       console.error("Sign up failed")
-      alert("Sign up failed")
+      console.log(response)
     }
   }
 

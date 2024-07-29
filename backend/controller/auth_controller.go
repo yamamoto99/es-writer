@@ -3,6 +3,7 @@ package controller
 import (
 	"es-app/controller/controllerUtils"
 	"es-app/model"
+	"es-app/repository"
 	"es-app/usecase"
 	"net/http"
 	"time"
@@ -20,10 +21,11 @@ type IAuthController interface {
 
 type authController struct {
 	authUsecase usecase.IAuthUsecase
+	userRepo    repository.IUserRepository
 }
 
-func NewAuthController(authUsecase usecase.IAuthUsecase) IAuthController {
-	return &authController{authUsecase}
+func NewAuthController(authUsecase usecase.IAuthUsecase, userRepo repository.IUserRepository) IAuthController {
+	return &authController{authUsecase: authUsecase, userRepo: userRepo}
 }
 
 func (ac *authController) SignUp(c echo.Context) error {
@@ -36,8 +38,21 @@ func (ac *authController) SignUp(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	// メールアドレスが既に登録されているか確認
+	isAlreadyRegisteredEmail, err := ac.IsAlreadyRegisteredEmail(c, signUpUser.Email)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if isAlreadyRegisteredEmail {
+		return echo.NewHTTPError(http.StatusConflict, "メールアドレスが既に登録されています")
+	}
+
 	userRes, err := ac.authUsecase.SignUp(c, signUpUser)
 	if err != nil {
+		// ユーザー名が既に登録されているか確認
+		if httpError, ok := err.(*echo.HTTPError); ok && httpError.Code == http.StatusConflict {
+			return echo.NewHTTPError(http.StatusConflict, "ユーザー名が既に登録されています")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -146,4 +161,15 @@ func (ac *authController) LogOut(c echo.Context) error {
 	c.Logger().Debug("🟡 Logged out")
 
 	return c.NoContent(http.StatusOK)
+}
+
+func (ac *authController) IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error) {
+	user, err := ac.userRepo.FindByEmail(c, email)
+	if err != nil {
+		return false, err
+	}
+	if user.Email != "" {
+		return true, nil
+	}
+	return false, nil
 }
