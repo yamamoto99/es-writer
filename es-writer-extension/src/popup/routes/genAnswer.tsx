@@ -1,23 +1,19 @@
 /// <reference types="chrome"/>
-
 import { api_endpoint } from "../../contents/index"
 
 async function genAnswer() {
   return new Promise<void>((resolve, reject) => {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       if (tabs[0] && tabs[0].id !== undefined) {
-        chrome.scripting.executeScript(
-          {
-            target: { tabId: tabs[0].id },
-            func: getActiveTabHTML
-          },
-          async (result) => {
-            if (result && result[0]) {
-              const html_source = result[0].result
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { action: "getHTML" },
+          async (response) => {
+            if (response && response.html) {
+              const html_source = response.html
               console.log("html loaded")
-
               try {
-                const response = await fetch(
+                const apiResponse = await fetch(
                   api_endpoint + "/app/generate/generateAnswers",
                   {
                     method: "POST",
@@ -27,17 +23,15 @@ async function genAnswer() {
                     body: JSON.stringify({ html: html_source })
                   }
                 )
-
-                if (!response.ok) {
+                if (!apiResponse.ok) {
                   console.error(
                     "Network response was not ok",
-                    response.statusText
+                    apiResponse.statusText
                   )
                   reject(new Error("Network response was not ok"))
                   return
                 }
-
-                const answers = await response.json()
+                const answers = await apiResponse.json()
                 console.log("Received answers:", answers)
                 replaceTextareaText(answers)
                 resolve()
@@ -59,27 +53,13 @@ async function genAnswer() {
   })
 }
 
-function getActiveTabHTML() {
-  return document.documentElement.outerHTML
-}
-
 function replaceTextareaText(answers: any) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0] && tabs[0].id !== undefined) {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        func: replaceTextareas,
-        args: [answers]
+      chrome.tabs.sendMessage(tabs[0].id, {
+        action: "replaceTextareas",
+        answers: answers
       })
-    }
-  })
-}
-
-function replaceTextareas(answers: any) {
-  const allTextareas = document.getElementsByTagName("textarea")
-  Array.from(allTextareas).forEach((textarea, index) => {
-    if (answers[index]) {
-      textarea.value = answers[index].answer
     }
   })
 }
