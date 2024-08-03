@@ -21,11 +21,11 @@ type IAuthController interface {
 
 type authController struct {
 	authUsecase usecase.IAuthUsecase
-	userRepo    repository.IUserRepository
+	authRepository    repository.IAuthRepository
 }
 
-func NewAuthController(authUsecase usecase.IAuthUsecase, userRepo repository.IUserRepository) IAuthController {
-	return &authController{authUsecase: authUsecase, userRepo: userRepo}
+func NewAuthController(authUsecase usecase.IAuthUsecase, authRepository repository.IAuthRepository) IAuthController {
+	return &authController{authUsecase: authUsecase, authRepository: authRepository}
 }
 
 func (ac *authController) SignUp(c echo.Context) error {
@@ -164,7 +164,7 @@ func (ac *authController) LogOut(c echo.Context) error {
 }
 
 func (ac *authController) IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error) {
-	user, err := ac.userRepo.FindByEmail(c, email)
+	user, err := ac.authRepository.FindByEmail(c, email)
 	if err != nil {
 		return false, err
 	}

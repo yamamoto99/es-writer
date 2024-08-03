@@ -19,7 +19,7 @@ func main() {
 	authUsecase := usecase.NewAuthUsecase(authRepository, infrastructure)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	generateUsecase := usecase.NewGenerateUsecase(generateRepository, userRepository)
-	authController := controller.NewAuthController(authUsecase, userRepository)
+	authController := controller.NewAuthController(authUsecase, authRepository)
 	userController := controller.NewUserController(userUsecase)
 	generateController := controller.NewGenerateController(generateUsecase)
 	authMiddleware := auth.NewAuthMiddleware(infrastructure)
