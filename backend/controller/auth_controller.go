@@ -20,12 +20,11 @@ type IAuthController interface {
 }
 
 type authController struct {
-	authUsecase usecase.IAuthUsecase
-	authRepository    repository.IAuthRepository
+	authUsecase    usecase.IAuthUsecase
 }
 
 func NewAuthController(authUsecase usecase.IAuthUsecase, authRepository repository.IAuthRepository) IAuthController {
-	return &authController{authUsecase: authUsecase, authRepository: authRepository}
+	return &authController{authUsecase: authUsecase}
 }
 
 func (ac *authController) SignUp(c echo.Context) error {
@@ -39,7 +38,7 @@ func (ac *authController) SignUp(c echo.Context) error {
 	}
 
 	// メールアドレスが既に登録されているか確認
-	isAlreadyRegisteredEmail, err := ac.IsAlreadyRegisteredEmail(c, signUpUser.Email)
+	isAlreadyRegisteredEmail, err := ac.authUsecase.IsAlreadyRegisteredEmail(c, signUpUser.Email)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -161,15 +160,4 @@ func (ac *authController) LogOut(c echo.Context) error {
 	c.Logger().Debug("🟡 Logged out")
 
 	return c.NoContent(http.StatusOK)
-}
-
-func (ac *authController) IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error) {
-	user, err := ac.authRepository.FindByEmail(c, email)
-	if err != nil {
-		return false, err
-	}
-	if user.Email != "" {
-		return true, nil
-	}
-	return false, nil
 }

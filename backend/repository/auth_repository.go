@@ -26,7 +26,7 @@ func (r *authRepository) CreateUser(c echo.Context, user model.User) error {
 
 func (r *authRepository) FindByEmail(c echo.Context, email string) (model.User, error) {
 	var user model.User
-	result := r.db.WithContext(c.Request().Context()).First(&user, "email = ?", email)
+	result := r.db.WithContext(c.Request().Context()).Select("email").Where("email = ?", email).First(&user)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			return model.User{}, nil
