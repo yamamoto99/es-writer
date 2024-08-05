@@ -37,11 +37,11 @@ func NewAuthUsecase(authRepo repository.IAuthRepository, infrastructure infrastr
 }
 
 func (u *authUsecase) IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error) {
-    user, err := u.authRepo.FindByEmail(c, email)
-    if err != nil {
-        return false, err
-    }
-    return user.Email != "", nil
+	email, err := u.authRepo.FindByEmail(c, email)
+	if err != nil {
+		return false, err
+	}
+	return email != "", nil
 }
 
 func (au *authUsecase) SignUp(c echo.Context, signUpUser model.SignUpUser) (model.User, error) {

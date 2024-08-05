@@ -9,7 +9,7 @@ import (
 
 type IAuthRepository interface {
 	CreateUser(c echo.Context, user model.User) error
-	FindByEmail(c echo.Context, email string) (model.User, error)
+	FindByEmail(c echo.Context, email string) (string, error)
 }
 
 type authRepository struct {
@@ -24,14 +24,14 @@ func (r *authRepository) CreateUser(c echo.Context, user model.User) error {
 	return r.db.WithContext(c.Request().Context()).Create(&user).Error
 }
 
-func (r *authRepository) FindByEmail(c echo.Context, email string) (model.User, error) {
+func (r *authRepository) FindByEmail(c echo.Context, email string) (string, error) {
 	var user model.User
 	result := r.db.WithContext(c.Request().Context()).Select("email").Where("email = ?", email).First(&user)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return model.User{}, nil
+			return "", nil
 		}
-		return model.User{}, result.Error
+		return "", result.Error
 	}
-	return user, nil
+	return email, nil
 }

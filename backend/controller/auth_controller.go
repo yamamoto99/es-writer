@@ -3,7 +3,6 @@ package controller
 import (
 	"es-app/controller/controllerUtils"
 	"es-app/model"
-	"es-app/repository"
 	"es-app/usecase"
 	"net/http"
 	"time"
@@ -20,10 +19,10 @@ type IAuthController interface {
 }
 
 type authController struct {
-	authUsecase    usecase.IAuthUsecase
+	authUsecase usecase.IAuthUsecase
 }
 
-func NewAuthController(authUsecase usecase.IAuthUsecase, authRepository repository.IAuthRepository) IAuthController {
+func NewAuthController(authUsecase usecase.IAuthUsecase) IAuthController {
 	return &authController{authUsecase: authUsecase}
 }
 
