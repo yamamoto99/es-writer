@@ -71,8 +71,14 @@ const CheckEmail = () => {
         <button
           onClick={handleResendEmail}
           type="button"
-          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700">
+          className="bg-green-500 text-white rounded-md px-3 py-2 hover:bg-green-700">
           Resend
+        </button>
+        <button
+          onClick={() => navigate("/signup")}
+          type="button"
+          className="bg-gray-500 text-white rounded-md px-3 py-2 hover:bg-gray-700">
+          Back
         </button>
       </div>
     </form>
