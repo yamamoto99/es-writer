@@ -23,7 +23,7 @@ type authController struct {
 }
 
 func NewAuthController(authUsecase usecase.IAuthUsecase) IAuthController {
-	return &authController{authUsecase}
+	return &authController{authUsecase: authUsecase}
 }
 
 func (ac *authController) SignUp(c echo.Context) error {
@@ -36,8 +36,21 @@ func (ac *authController) SignUp(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	// メールアドレスが既に登録されているか確認
+	isAlreadyRegisteredEmail, err := ac.authUsecase.IsAlreadyRegisteredEmail(c, signUpUser.Email)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	if isAlreadyRegisteredEmail {
+		return echo.NewHTTPError(http.StatusConflict, "メールアドレスが既に登録されています")
+	}
+
 	userRes, err := ac.authUsecase.SignUp(c, signUpUser)
 	if err != nil {
+		// ユーザー名が既に登録されているか確認
+		if httpError, ok := err.(*echo.HTTPError); ok && httpError.Code == http.StatusConflict {
+			return echo.NewHTTPError(http.StatusConflict, "ユーザー名が既に登録されています")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 

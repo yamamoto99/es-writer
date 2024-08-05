@@ -1,7 +1,9 @@
 package infrastructure
 
 import (
+	"errors"
 	"es-app/model"
+	"net/http"
 	"os"
 	"time"
 
@@ -69,6 +71,10 @@ func (i *infrastructure) SignUp(c echo.Context, signUpUser model.SignUpUser) (mo
 
 	signUpOutput, err := svc.SignUp(c.Request().Context(), signUpInput)
 	if err != nil {
+		var ae *types.UsernameExistsException
+		if errors.As(err, &ae) {
+			return model.User{}, echo.NewHTTPError(http.StatusConflict, "ユーザーネームが既に存在します")
+		}
 		return model.User{}, err
 	}
 

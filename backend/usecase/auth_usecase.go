@@ -17,6 +17,7 @@ type IAuthUsecase interface {
 	AccessToken(c echo.Context, accessToken string) (model.LoginUser, error)
 	RefreshToken(c echo.Context, refreshToken string) (model.LoginResponse, model.LoginUser, error)
 	LogOut(c echo.Context, accessToken string) error
+	IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error)
 }
 
 type authUsecase struct {
@@ -33,6 +34,14 @@ func NewAuthUsecase(authRepo repository.IAuthRepository, infrastructure infrastr
 		clientID:       os.Getenv("COGNITO_CLIENT_ID"),
 		jwtKeyURL:      os.Getenv("TOKEN_KEY_URL"),
 	}
+}
+
+func (u *authUsecase) IsAlreadyRegisteredEmail(c echo.Context, email string) (bool, error) {
+	email, err := u.authRepo.FindByEmail(c, email)
+	if err != nil {
+		return false, err
+	}
+	return email != "", nil
 }
 
 func (au *authUsecase) SignUp(c echo.Context, signUpUser model.SignUpUser) (model.User, error) {
