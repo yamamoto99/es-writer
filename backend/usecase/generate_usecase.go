@@ -34,9 +34,10 @@ func (gu *generateUsecase) GenerateAnswers(c echo.Context, input string) ([]mode
 	}
 
 	var profile model.UserProfile
-	profile.Bio = user.Bio
-	profile.Experience = user.Experience
-	profile.Projects = user.Projects
+	profile.WorkExperience = user.WorkExperience
+	profile.Skills = user.Skills
+	profile.SelfPR = user.SelfPR
+	profile.FutureGoals = user.FutureGoals
 
 	cleanHtml := usecaseUtils.CleanHTMLContent(input)
 	bodyContent, err := usecaseUtils.ExtractBodyContent(cleanHtml)

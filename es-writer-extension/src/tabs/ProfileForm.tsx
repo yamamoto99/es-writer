@@ -5,9 +5,10 @@ import "../../style.css"
 import { api_endpoint } from "../contents/index"
 
 const ProfileForm = () => {
-  const [bio, setBio] = useState("")
-  const [experience, setExperience] = useState("")
-  const [projects, setProjects] = useState("")
+  const [workExperience, setWorkExperience] = useState("")
+  const [skills, setSkills] = useState("")
+  const [selfPR, setSelfPR] = useState("")
+  const [futureGoals, setFutureGoals] = useState("")
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -21,9 +22,10 @@ const ProfileForm = () => {
 
         if (response.ok) {
           const data = await response.json()
-          setBio(data.bio || "")
-          setExperience(data.experience || "")
-          setProjects(data.projects || "")
+          setWorkExperience(data.workExperience || "")
+          setSkills(data.skills || "")
+          setSelfPR(data.selfPR || "")
+          setFutureGoals(data.futureGoals || "")
         } else {
           console.error("Failed to fetch profile data")
         }
@@ -43,7 +45,7 @@ const ProfileForm = () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ bio, experience, projects })
+      body: JSON.stringify({ workExperience, skills, selfPR, futureGoals })
     })
 
     if (response.ok) {
@@ -58,10 +60,32 @@ const ProfileForm = () => {
       <h2 className="text-xl font-bold mb-4">Profile Information</h2>
       <div className="mb-4">
         <label className="block mb-2">
+          略歴（アルバイト、インターン、イベントなど）:
+          <textarea
+            value={workExperience}
+            onChange={(e) => setWorkExperience(e.target.value)}
+            required
+            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
+          />
+        </label>
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">
+          スキル・資格・研究内容:
+          <textarea
+            value={skills}
+            onChange={(e) => setSkills(e.target.value)}
+            required
+            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
+          />
+        </label>
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">
           自己PR:
           <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            value={selfPR}
+            onChange={(e) => setSelfPR(e.target.value)}
             required
             className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
           />
@@ -69,21 +93,10 @@ const ProfileForm = () => {
       </div>
       <div className="mb-4">
         <label className="block mb-2">
-          経験:
+          将来の目標とキャリアプラン:
           <textarea
-            value={experience}
-            onChange={(e) => setExperience(e.target.value)}
-            required
-            className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
-          />
-        </label>
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2">
-          今まで作った作品:
-          <textarea
-            value={projects}
-            onChange={(e) => setProjects(e.target.value)}
+            value={futureGoals}
+            onChange={(e) => setFutureGoals(e.target.value)}
             required
             className="w-full h-24 p-2 border border-gray-300 rounded mb-4"
           />

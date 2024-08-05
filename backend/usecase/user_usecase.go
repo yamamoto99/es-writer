@@ -38,9 +38,10 @@ func (uu *userUsecase) UpdateProfile(c echo.Context, input model.UserProfile) (m
 		return model.User{}, err
 	}
 
-	user.Bio = input.Bio
-	user.Experience = input.Experience
-	user.Projects = input.Projects
+	user.WorkExperience = input.WorkExperience
+	user.Skills = input.Skills
+	user.SelfPR = input.SelfPR
+	user.FutureGoals = input.FutureGoals
 
 	res, err := uu.userRepo.UpdateUser(c, userID, user)
 	if err != nil {
