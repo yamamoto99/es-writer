@@ -54,6 +54,20 @@ func findBodyNode(n *html.Node) *html.Node {
 }
 
 func GeneratePrompt(profile model.UserProfile, question string) string {
-	combinedBio := fmt.Sprintf("%sです。今までの経験は%sです。これまでに作ってきた作品は%s", profile.Bio, profile.Experience, profile.Projects)
-	return fmt.Sprintf("あなたの経歴は%sです。以下の質問に答えてください。簡潔かつ具体的に記述し、#や*,-などは使用せずに平文で解答部分のみを出力してください。\n%s", combinedBio, question)
+	studentExperience := fmt.Sprintf(
+		"私の略歴（アルバイト、インターン、イベントなど）は%sです。" +
+		"私のスキル・資格・研究内容は%sです。" +
+		"自己PRは%sです。" +
+		"将来の目標とキャリアプランは%sです。",
+		profile.WorkExperience, profile.Skills, profile.SelfPR, profile.FutureGoals,
+	)
+
+	return fmt.Sprintf(
+		"学生の質問に対し、簡潔かつ具体的に記述し、#や*,-などは使用せずに平文で回答してください。" +
+		"回答は質問に書かれた文字数制限の約9割で記述してください。" +
+		"学生:私の経歴に基づいて質問に回答してください。" +
+		"%s。私の経歴は以下の通りです。" +
+		"%s回答:",
+		question, studentExperience,
+	)
 }
