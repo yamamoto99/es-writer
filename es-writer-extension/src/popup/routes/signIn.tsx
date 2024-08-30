@@ -9,7 +9,7 @@ import openProfileForm from "./openProfileForm"
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const [loginState, setLoginState] = useStorage<string>("loginState")
+  const [_, setLoginState] = useStorage<string>("loginState")
   const {
     register,
     handleSubmit,

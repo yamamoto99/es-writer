@@ -7,7 +7,7 @@ import { api_endpoint } from "../../contents"
 
 function LogOut() {
   const navigate = useNavigate()
-  const [loginState, setLoginState] = useStorage<string>("loginState")
+  const [_, setLoginState] = useStorage<string>("loginState")
 
   const handleLogout = async () => {
     try {
