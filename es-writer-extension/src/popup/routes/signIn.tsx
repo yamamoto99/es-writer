@@ -32,7 +32,7 @@ const SignIn = () => {
       openProfileForm()
     } else {
       console.error("Sign in failed")
-      alert("ユーザーネームまたはパスワードが違います")//ここ直す　ユーザー名かパスワードが違う
+      alert("ユーザーネームまたはパスワードが違います")
     }
   }
 
