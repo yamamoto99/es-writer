@@ -9,7 +9,7 @@ import openProfileForm from "./openProfileForm"
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const [loginState, setLoginState] = useStorage<string>("loginState")
+  const [_, setLoginState] = useStorage<string>("loginState")
   const {
     register,
     handleSubmit,
@@ -32,7 +32,7 @@ const SignIn = () => {
       openProfileForm()
     } else {
       console.error("Sign in failed")
-      alert("ユーザーネームまたはパスワードが違います")//ここ直す　ユーザー名かパスワードが違う
+      alert("ユーザーネームまたはパスワードが違います")
     }
   }
 
