@@ -4,6 +4,8 @@
 <h4>拡張機能にすることにより、画面遷移なく、実際のページへの自動書き込みを実現しました</h4>
 <h4>経歴は変わらないのに同じような内容を毎回書くのが勿体ないと感じ、これらの作業をAIに任せることにより、開発などの有意義な時間を増やすことができます</h4>
 
+#### [ここからインストール出来ます](https://chromewebstore.google.com/detail/es-writer-extension/jkencchebhkbaomammmgbhnpalgkchkm?hl=ja)
+
 ## 表彰
 Progateハッカソン powered by AWS　エムスリー株式会社賞　受賞
 ## 技術スタック
