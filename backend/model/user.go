@@ -5,14 +5,15 @@ import (
 )
 
 type User struct {
-	UserID     string    `json:"id" gorm:"gorm:unique not null"`
-	Username   string    `json:"username" gorm:"unique not null"`
-	Email      string    `json:"email"`
-	Bio        string    `json:"bio"`
-	Experience string    `json:"experience"`
-	Projects   string    `json:"projects"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	UserID         string    `json:"id" gorm:"gorm:unique not null"`
+	Username       string    `json:"username" gorm:"unique not null"`
+	Email          string    `json:"email"`
+	WorkExperience string    `json:"workExperience"`
+	Skills         string    `json:"skills"`
+	SelfPR         string    `json:"selfPR"`
+	FutureGoals    string    `json:"futureGoals"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type SignUpUser struct {
@@ -44,7 +45,8 @@ type LoginResponse struct {
 }
 
 type UserProfile struct {
-	Bio        string `json:"bio" validate:"required"`
-	Experience string `json:"experience" validate:"required"`
-	Projects   string `json:"projects" validate:"required"`
+	WorkExperience string `json:"workExperience"`
+	Skills         string `json:"skills"`
+	SelfPR         string `json:"selfPR"`
+	FutureGoals    string `json:"futureGoals"`
 }

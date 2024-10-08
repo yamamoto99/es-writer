@@ -26,16 +26,17 @@ PostgreSQLに接続する。ユーザー名はpostgresで、データベース�
 psql -U postgres -d test_db
 ```
 ## テーブル構造
-| フィールド名 | データ型 | JSON タグ | GORM タグ |
-|-------------|---------|-----------|-----------|
-| UserID      | string  | id        | gorm:unique not null |
-| Username    | string  | username  | unique not null |
-| Email       | string  | email     | - |
-| Bio         | string  | bio       | - |
-| Experience  | string  | experience| - |
-| Projects    | string  | projects  | - |
-| CreatedAt   | time.Time| created_at| - |
-| UpdatedAt   | time.Time| updated_at| - |
+| フィールド名      | データ型  | JSON タグ       | GORM タグ |
+|------------------|-----------|-----------------|-----------|
+| UserID           | string    | user_id         | gorm:unique not null |
+| Username         | string    | username        | unique not null |
+| Email            | string    | email           | - |
+| WorkExperience   | string    | work_experience | - |
+| Skills           | string    | skills          | - |
+| SelfPR           | string    | self_pr         | - |
+| FutureGoals      | string    | future_goals    | - |
+| CreatedAt        | time.Time | created_at      | - |
+| UpdatedAt        | time.Time | updated_at      | - |
 
 ## EC2接続方法
 >[!CAUTION]
