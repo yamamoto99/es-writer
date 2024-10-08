@@ -10,7 +10,7 @@ type User struct {
 	Email          string    `json:"email"`
 	WorkExperience string    `json:"workExperience"`
 	Skills         string    `json:"skills"`
-	SelfPR        string     `json:"selfPR"`
+	SelfPR         string    `json:"selfPR"`
 	FutureGoals    string    `json:"futureGoals"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -45,8 +45,8 @@ type LoginResponse struct {
 }
 
 type UserProfile struct {
-	WorkExperience string    `json:"workExperience"`
-	Skills         string    `json:"skills"`
-	SelfPR         string     `json:"selfPR"`
-	FutureGoals    string    `json:"futureGoals"`
+	WorkExperience string `json:"workExperience"`
+	Skills         string `json:"skills"`
+	SelfPR         string `json:"selfPR"`
+	FutureGoals    string `json:"futureGoals"`
 }
