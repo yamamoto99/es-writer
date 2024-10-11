@@ -45,7 +45,7 @@ func (gu *generateUsecase) GenerateAnswers(c echo.Context, input string) ([]mode
 		return []model.Answer{}, err
 	}
 
-	sendMessage := `以下のHTMLを解析し、textareaのある質問文のみを抽出し、質問文のみを出力してください。出力する際は全ての質問を一つに繋いでください。そして、それぞれの質問文の間には#*#を入れてください。`
+	sendMessage := `以下のHTMLを解析し、textareaのある質問文のみを抽出し、質問文のみを出力してください。出力する際は全ての質問を一つに繋いでください。そして、それぞれの質問文の間には"#*#"を入れてください。`
 	questionsScrapeQuery := sendMessage + bodyContent
 	url := `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=` + os.Getenv("GOOGLE_API_KEY")
 	res, err := gu.GenerateRepo.SendAIRequest(c, questionsScrapeQuery, url)
